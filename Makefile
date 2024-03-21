@@ -14,7 +14,7 @@ OBJ = $(SRC:.c=.o)
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) -lreadline $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -lreadline -o $(NAME)
 
 clean:
 	rm -f $(OBJ)
