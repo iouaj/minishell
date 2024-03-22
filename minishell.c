@@ -6,19 +6,14 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 15:44:40 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/21 16:59:46 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/22 15:45:45 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	go(const char *str)
-{
-	if (!str || str[0] == 0)
-		return (1);
-	return (ft_strncmp(str, "exit", ft_strlen(str)));
-}
-
+//Change termios
+//Ctrl D will now exit minishell, Ctrl C create a newline and Ctrl \ will do nothing.
 void	settermios(struct termios old_term)
 {
 	struct termios	new_term;
@@ -26,16 +21,8 @@ void	settermios(struct termios old_term)
 	new_term = old_term;
 	new_term.c_cc[VINTR] = 4;
 	new_term.c_cc[VEOF] = 3;
-	new_term.c_cc[VERASE] = 0;
+	new_term.c_cc[VQUIT] = 0;
 	tcsetattr(0, TCSANOW, &new_term);
-}
-
-void	parsing(char *str)
-{
-	if (!ft_strncmp(str, "exit", 4))
-		return ;
-	else
-		printf("%s: command not found\n", str);
 }
 
 int	main(void)
@@ -46,7 +33,7 @@ int	main(void)
 	str = NULL;
 	tcgetattr(0, &old_term);
 	settermios(old_term);
-	while (go(str))
+	while (1)
 	{
 		if (str)
 			free(str);

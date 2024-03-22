@@ -3,9 +3,15 @@ NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
+INCLUDES = minishell.h
+
 FILES =	minishell \
 		ft_strncmp \
-		ft_strlen
+		ft_strlen \
+		ft_strtrim \
+		ft_split \
+		utils \
+		parsing
 
 SRC = $(addsuffix .c, $(FILES))
 
@@ -13,8 +19,8 @@ OBJ = $(SRC:.c=.o)
 
 all : $(NAME)
 
-$(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -lreadline -o $(NAME)
+$(NAME) : $(OBJ) $(INCLUDES)
+	$(CC) $(CFLAGS) $(OBJ) -lreadline -I $(INCLUDES) -o $(NAME)
 
 clean:
 	rm -f $(OBJ)
