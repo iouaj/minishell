@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:45:27 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/22 15:51:55 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/25 01:05:17 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,25 @@ void exec_child(int pipefd[2])
 	write(STDOUT_FILENO, "\n", 1);
 	close(pipefd[0]);
 }
+
+// char	*do_cmd(char **splitter)
+// {
+// 	int	i;
+// 	char *output;
+
+// 	if (ft_strncmp(splitter[0], "echo", ft_strlen(splitter[0])))
+// 	{
+// 		i = 1;
+// 		output = NULL;
+// 		while (splitter[i])
+// 		{
+// 			output = ft_strjoin(output, splitter[i]);
+// 			free(splitter[i]);
+// 			i++;
+// 		}
+// 		return (output);
+// 	}
+// }
 
 int	do_pipe(char **splitter)
 {
@@ -73,7 +92,7 @@ int	check_pipe(char **splitter)
 	return (0);
 }
 
-void	parsing(char *str)
+int	parsing(char *str)
 {
 	char **splitter;
 
@@ -81,9 +100,21 @@ void	parsing(char *str)
 	if (check_pipe(splitter))
 	{
 		free_splitter(splitter);
-		return ;
+		return (1);
+	}
+	else if (!ft_strncmp(splitter[0], "pwd", ft_strlen(splitter[0])))
+		printf("%s\n", pwd());
+	else if (!ft_strncmp(splitter[0], "cd", ft_strlen(splitter[0])))
+		cd(splitter[1]);
+	else if (!ft_strncmp(splitter[0], "echo", ft_strlen(splitter[0])))
+		echo(splitter);
+	else if (!ft_strncmp(splitter[0], "exit", ft_strlen(splitter[0])))
+	{
+		free_splitter(splitter);
+		return (0);
 	}
 	else
 		printf("%s: command not found\n", str);
 	free_splitter(splitter);
+	return (1);
 }

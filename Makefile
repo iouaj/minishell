@@ -10,8 +10,10 @@ FILES =	minishell \
 		ft_strlen \
 		ft_strtrim \
 		ft_split \
+		ft_strjoin \
 		utils \
-		parsing
+		parsing \
+		builtins
 
 SRC = $(addsuffix .c, $(FILES))
 

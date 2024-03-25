@@ -1,48 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/22 15:22:05 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/24 01:01:45 by iouajjou         ###   ########.fr       */
+/*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
+/*   Updated: 2024/03/24 20:46:03 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	error(char *err)
+char	*pwd(void)
 {
-	perror(err);
-	exit(EXIT_FAILURE);
+	char *output;
+
+	output = getcwd(NULL, 0);
+	return (output);
 }
 
-void	free_splitter(char **splitter)
+void	cd(char *path)
+{
+	if (chdir(path) == -1)
+		printf("cd: not a directory : %s\n", path);
+}
+
+void	echo(char **splitter)
 {
 	int	i;
 
-	i = 0;
+	i = 1;
+	if (!ft_strncmp(splitter[i], "-n", ft_strlen(splitter[i])))
+		i++;
 	while (splitter[i])
 	{
-		free(splitter[i]);
+		printf("%s", splitter[i]);
 		i++;
+		if (splitter[i])
+			printf(" ");
 	}
-	free(splitter);
-}
-
-char	**ft_strtrim_splitter(char **splitter)
-{
-	char	*trim;
-	int	i;
-
-	i = 0;
-	while (splitter[i])
-	{
-		trim = ft_strtrim(splitter[i], " \'\"\n\t");
-		free(splitter[i]);
-		splitter[i] = trim;
-		i++;
-	}
-	return (splitter);
+	if (ft_strncmp(splitter[1], "-n", ft_strlen(splitter[1])))
+		printf("\n");
 }

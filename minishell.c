@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 15:44:40 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/22 15:45:45 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/24 20:48:53 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,9 @@ int	main(void)
 		str = readline("$>");
 		if (str && str[0])
 		{
-			parsing(str);
 			add_history(str);
+			if (!parsing(str))
+			break ;
 		}
 	}
 	clear_history();
