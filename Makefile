@@ -6,25 +6,25 @@ CFLAGS = -Wall -Wextra -Werror
 INCLUDES = minishell.h
 
 FILES =	minishell \
-		ft_strncmp \
-		ft_strlen \
-		ft_strtrim \
-		ft_split \
-		ft_strjoin \
 		utils \
 		parsing \
-		builtins
+		builtins \
+		env
 
 SRC = $(addsuffix .c, $(FILES))
 
 OBJ = $(SRC:.c=.o)
 
+LIBFT = libft
+
 all : $(NAME)
 
-$(NAME) : $(OBJ) $(INCLUDES)
-	$(CC) $(CFLAGS) $(OBJ) -lreadline -I $(INCLUDES) -o $(NAME)
+$(NAME) : $(OBJ) $(INCLUDES) $(LIBFT)
+	make -C $(LIBFT)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)/libft.a -lreadline -I $(INCLUDES) -o $(NAME)
 
 clean:
+	make fclean -C $(LIBFT)
 	rm -f $(OBJ)
 
 fclean: clean

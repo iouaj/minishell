@@ -9,7 +9,7 @@
 /*   Updated: 2023/11/06 12:28:21 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "minishell.h"
+#include "libft.h"
 
 static int	is_inset(char const *set, char c)
 {
@@ -65,3 +65,11 @@ char	*ft_strtrim(char const *s1, char const *set)
 	cpy(s1 + i, trim, len - i);
 	return (trim);
 }
+
+/*#include <stdio.h>
+
+int main()
+{
+ 	char str[] = "*******,,,,///Ceci est un / test**************,,,,";
+ 	printf("%s", ft_strtrim(str, "*,/"));
+}*/

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
 static int	count_words(char const *s, char c)
 {
@@ -44,6 +44,23 @@ static int	next_string(char const *s, char c)
 		i++;
 	return (i);
 }
+
+// static char	*dupli(const char *s, char *dup, char c, int len)
+// {
+// 	int	i;
+
+// 	dup = malloc(sizeof(char) * len + 1);
+// 	if (!dup)
+// 		return (NULL);
+// 	i = 0;
+// 	while (s[i] && s[i] != c)
+// 	{
+// 		dup[i] = s[i];
+// 		i++;
+// 	}
+// 	dup[i] = 0;
+// 	return (dup);
+// }
 
 static void	cleanleaks(char **splitter)
 {

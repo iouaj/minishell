@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:22:05 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/24 01:01:45 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/25 14:15:11 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,17 @@ char	**ft_strtrim_splitter(char **splitter)
 		i++;
 	}
 	return (splitter);
+}
+
+char	*ft_strupper(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str && str[i])
+	{
+		str[i] = ft_toupper(str[i]);
+		i++;
+	}
+	return (str);
 }
