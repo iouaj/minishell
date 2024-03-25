@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 14:18:22 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/25 15:46:01 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ void	export(t_env **e, char *arg)
 	if (!splitter_arg || !splitter_arg[0])
 		return ;
 	if (!splitter_arg[1])
-		new = env_create_list(ft_strupper(splitter_arg[0]), "0");
+		new = env_create_list(splitter_arg[0], "0");
 	else
-		new = env_create_list(ft_strupper(splitter_arg[0]), splitter_arg[1]);
+		new = env_create_list(splitter_arg[0], splitter_arg[1]);
 	if (!new)
 	{
 		perror("malloc");
@@ -85,5 +85,4 @@ void	export(t_env **e, char *arg)
 	}
 	env_add(e, new);
 	free_splitter(splitter_arg);
-	env(*e);
 }

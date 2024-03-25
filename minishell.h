@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 15:42:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 14:15:21 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/25 16:39:42 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,17 @@ char	**ft_split(char const *s, char c);
 void	free_splitter(char **splitter);
 char	**ft_strtrim_splitter(char **splitter);
 char	*ft_strupper(char *str);
-int		parsing(char *str, t_env **env);
+int		parsing(char *str, t_env **env, char *envp[]);
 void	error(char *err);
 char	*ft_strjoin(char const *s1, char const *s2);
 
 //env
 void	env_add(t_env **lst, t_env *new);
 t_env	*env_create_list(char *name, char *content);
-t_env	*get_env_list(void);
+t_env	*get_env_list(char *envp[]);
 void	free_env(t_env *env);
+void	env_delete(t_env **env, char *name);
+char	*get_env(char *name, t_env *e);
 
 //Command
 char	*pwd(void);

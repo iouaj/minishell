@@ -6,17 +6,33 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:04:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 14:09:19 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/25 16:39:35 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_env	*get_env_list(void)
+t_env	*get_env_list(char *envp[])
 {
 	t_env	*env;
+	char	**splitter_envp;
+	int	i;
 
-	env = env_create_list("HOME", getenv("HOME"));
+	i = 0;
+	env = NULL;
+	while (envp && envp[i])
+	{
+		splitter_envp = ft_split(envp[i], '=');
+		if (!splitter_envp)
+		{
+			free_env(env);
+			return (NULL);
+		}
+		env_add(&env, env_create_list(splitter_envp[0], splitter_envp[1]));
+		if (!env)
+			return (NULL);
+		i++;
+	}
 	return (env);
 }
 
@@ -43,13 +59,24 @@ t_env	*env_create_list(char *name, char *content)
 			return (NULL);
 		}
 	}
+	env->next = NULL;
 	return (env);
 }
 
 void	env_add(t_env **lst, t_env *new)
 {
-	new->next = *lst;
-	*lst = new;
+	t_env	*temp;
+
+	temp = *lst;
+	if (!(*lst))
+		*lst = new;
+	else
+	{
+		while ((*lst)->next)
+			lst = &(*lst)->next;
+		(*lst)->next = new;
+		lst = &temp;
+	}
 }
 
 void	free_env(t_env *env)
@@ -64,4 +91,43 @@ void	free_env(t_env *env)
 		free(env);
 		env = next;
 	}
+	env = NULL;
+}
+
+void	env_delete(t_env **e, char *name)
+{
+	t_env	*to_delete;
+	t_env	*temp;
+
+	temp = *e;
+	if (!ft_strncmp((*e)->name, name, ft_strlen((*e)->name)))
+	{
+		*e = (*e)->next;
+		return ;
+	}
+	while (*e)
+	{
+		if ((*e)->next && !ft_strncmp((*e)->next->name, name, ft_strlen((*e)->name)))
+		{
+			to_delete = (*e)->next;
+			(*e)->next = (*e)->next->next;
+			to_delete->next = NULL;
+			free_env(to_delete);
+			break ;
+		}
+		*e = (*e)->next;
+	}
+	*e = temp;
+	return ;
+}
+
+char	*get_env(char *name, t_env *e)
+{
+	while (e)
+	{
+		if (!ft_strncmp(e->name, name, ft_strlen(e->name)))
+			return (e->content);
+		e = e->next;
+	}
+	return (NULL);
 }
