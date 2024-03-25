@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:45:27 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 16:53:24 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/25 18:18:58 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,11 +92,63 @@ int	check_pipe(char **splitter)
 	return (0);
 }
 
+void	exec_others(char *argv[], char *envp[])
+{
+	char *path;
+	int	pid;
+
+	pid = fork();
+	if (!pid)
+	{
+		if (!ft_strncmp(argv[0], "./", 2))
+		{
+			if (execve(argv[0], argv, envp) == -1)
+				printf("%s: no such file or directory\n", argv[0]);
+		}
+		else
+		{
+			path = ft_strjoin("/bin/", argv[0]);
+			if (execve(path, argv, envp) == -1)
+				printf("%s: command not found\n", argv[0]);
+			free(path);
+		}
+	}
+	else
+		waitpid(pid, NULL, 0);
+}
+
+void	check_env(char **splitter, t_env *e)
+{
+	int		i;
+	int		j;
+	char	*temp;
+
+	i = 0;
+	while (splitter && splitter[i])
+	{
+		j = 0;
+		while (splitter[i][j])
+		{
+			if (splitter[i][j] == '$')
+			{
+				temp = ft_strtrim(splitter[i] + j, " $\n\t\b><;");
+				free(splitter[i]);
+				splitter[i] = ft_strdup(get_env(temp, e));
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
 int	parsing(char *str, t_env **e, char *envp[])
 {
 	char **splitter;
 
 	splitter = ft_strtrim_splitter(ft_split(str, ' '));
+	if (!splitter)
+		return (0);
+	check_env(splitter, *e);
 	if (check_pipe(splitter))
 	{
 		free_splitter(splitter);
@@ -121,9 +173,7 @@ int	parsing(char *str, t_env **e, char *envp[])
 		env_delete(e, splitter[1]);
 	else
 	{
-		// if (execve(splitter[0], splitter , envp) == -1)
-		(void) envp;
-			printf("%s: command not found\n", str);
+		exec_others(splitter, envp);
 	}
 	free_splitter(splitter);
 	return (1);

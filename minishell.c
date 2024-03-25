@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 15:44:40 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 16:37:02 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/25 18:21:32 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,9 @@ void	settermios(struct termios old_term)
 // 	(void) sig;
 // 	(void) siginfo;
 // 	(void) context;
-// 	printf("yo\n");
-// 	g_sig = 0;
+// 	// printf("yo\n");
+// 	// g_sig = 0;
+// 	return ;
 // }
 
 // void	setsignal(void)
