@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:04:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 16:39:35 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/26 16:39:58 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ t_env	*get_env_list(char *envp[])
 		env_add(&env, env_create_list(splitter_envp[0], splitter_envp[1]));
 		if (!env)
 			return (NULL);
+		free_splitter(splitter_envp);
 		i++;
 	}
 	return (env);
@@ -94,7 +95,7 @@ void	free_env(t_env *env)
 	env = NULL;
 }
 
-void	env_delete(t_env **e, char *name)
+int	env_delete(t_env **e, char *name)
 {
 	t_env	*to_delete;
 	t_env	*temp;
@@ -103,7 +104,7 @@ void	env_delete(t_env **e, char *name)
 	if (!ft_strncmp((*e)->name, name, ft_strlen((*e)->name)))
 	{
 		*e = (*e)->next;
-		return ;
+		return (1);
 	}
 	while (*e)
 	{
@@ -118,7 +119,7 @@ void	env_delete(t_env **e, char *name)
 		*e = (*e)->next;
 	}
 	*e = temp;
-	return ;
+	return (1);
 }
 
 char	*get_env(char *name, t_env *e)
@@ -129,5 +130,5 @@ char	*get_env(char *name, t_env *e)
 			return (e->content);
 		e = e->next;
 	}
-	return (NULL);
+	return (" ");
 }

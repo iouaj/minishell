@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:45:27 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 18:18:58 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/26 17:16:04 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,25 +22,6 @@ void exec_child(int pipefd[2])
 	write(STDOUT_FILENO, "\n", 1);
 	close(pipefd[0]);
 }
-
-// char	*do_cmd(char **splitter)
-// {
-// 	int	i;
-// 	char *output;
-
-// 	if (ft_strncmp(splitter[0], "echo", ft_strlen(splitter[0])))
-// 	{
-// 		i = 1;
-// 		output = NULL;
-// 		while (splitter[i])
-// 		{
-// 			output = ft_strjoin(output, splitter[i]);
-// 			free(splitter[i]);
-// 			i++;
-// 		}
-// 		return (output);
-// 	}
-// }
 
 int	do_pipe(char **splitter)
 {
@@ -92,7 +73,7 @@ int	check_pipe(char **splitter)
 	return (0);
 }
 
-void	exec_others(char *argv[], char *envp[])
+int	exec_others(char *argv[], char *envp[])
 {
 	char *path;
 	int	pid;
@@ -112,9 +93,13 @@ void	exec_others(char *argv[], char *envp[])
 				printf("%s: command not found\n", argv[0]);
 			free(path);
 		}
+		exit(EXIT_SUCCESS);
 	}
+	else if (pid == -1)
+		return (0);
 	else
 		waitpid(pid, NULL, 0);
+	return (1);
 }
 
 void	check_env(char **splitter, t_env *e)
@@ -143,7 +128,8 @@ void	check_env(char **splitter, t_env *e)
 
 int	parsing(char *str, t_env **e, char *envp[])
 {
-	char **splitter;
+	char	**splitter;
+	int		value;
 
 	splitter = ft_strtrim_splitter(ft_split(str, ' '));
 	if (!splitter)
@@ -155,26 +141,23 @@ int	parsing(char *str, t_env **e, char *envp[])
 		return (1);
 	}
 	else if (!ft_strncmp(splitter[0], "pwd", ft_strlen(splitter[0])))
-		printf("%s\n", pwd());
+		value = pwd();
 	else if (!ft_strncmp(splitter[0], "cd", ft_strlen(splitter[0])))
-		cd(splitter[1], *e);
+		value = cd(splitter[1], *e);
 	else if (!ft_strncmp(splitter[0], "echo", ft_strlen(splitter[0])))
-		echo(splitter);
+		value =echo(splitter);
 	else if (!ft_strncmp(splitter[0], "exit", ft_strlen(splitter[0])))
-	{
-		free_splitter(splitter);
-		return (0);
-	}
+		value = 0;
 	else if (!ft_strncmp(splitter[0], "env", ft_strlen(splitter[0])))
-		env(*e);
+		value = env(*e);
 	else if (!ft_strncmp(splitter[0], "export", ft_strlen(splitter[0])))
-		export(e, splitter[1]);
+		value = export(e, splitter[1]);
 	else if (!ft_strncmp(splitter[0], "unset", ft_strlen(splitter[0])))
-		env_delete(e, splitter[1]);
+		value = env_delete(e, splitter[1]);
 	else
 	{
-		exec_others(splitter, envp);
+		value = exec_others(splitter, envp);
 	}
 	free_splitter(splitter);
-	return (1);
+	return (value);
 }

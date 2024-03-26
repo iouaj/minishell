@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 15:44:40 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 18:21:32 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/26 16:31:19 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,24 @@ void	settermios(struct termios old_term)
 	tcsetattr(0, TCSANOW, &new_term);
 }
 
-// void	handle_sigusr(int sig, siginfo_t *siginfo, void *context)
-// {
-// 	(void) sig;
-// 	(void) siginfo;
-// 	(void) context;
-// 	// printf("yo\n");
-// 	// g_sig = 0;
-// 	return ;
-// }
+void	handle_sigusr(int sig, siginfo_t *siginfo, void *context)
+{
+	(void) sig;
+	(void) context;
+	g_sig = 0;
+	if (close(siginfo->si_fd) == -1)
+		printf("error\n");
+}
 
-// void	setsignal(void)
-// {
-// 	struct sigaction	sa;
+void	setsignal(void)
+{
+	struct sigaction	sa;
 
-// 	sa.sa_flags = SA_SIGINFO;
-// 	sa.sa_sigaction = handle_sigusr;
-// 	sigemptyset(&sa.sa_mask);
-// 	sigaction(SIGINT, &sa, NULL);
-// }
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = &handle_sigusr;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
+}
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -64,12 +63,12 @@ int	main(int argc, char *argv[], char *envp[])
 	}
 	tcgetattr(0, &old_term);
 	settermios(old_term);
-	// setsignal();
+	setsignal();
 	while (g_sig)
 	{
 		if (str)
 			free(str);
-		str = readline("$>");
+		str = readline("\033[1;34mminishell$> \033[0m");
 		if (str && str[0])
 		{
 			add_history(str);
@@ -77,10 +76,10 @@ int	main(int argc, char *argv[], char *envp[])
 				break ;
 		}
 	}
-	printf("yo\n");
+	printf("\n\ngoodbye\n");
 	clear_history();
 	free(str);
-	free(env);
+	free_env(env);
 	tcsetattr(0, TCSANOW, &old_term);
 	return (0);
 }

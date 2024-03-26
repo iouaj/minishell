@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 15:42:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 16:39:42 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/26 16:40:11 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ void	env_add(t_env **lst, t_env *new);
 t_env	*env_create_list(char *name, char *content);
 t_env	*get_env_list(char *envp[]);
 void	free_env(t_env *env);
-void	env_delete(t_env **env, char *name);
+int		env_delete(t_env **env, char *name);
 char	*get_env(char *name, t_env *e);
 
 //Command
-char	*pwd(void);
-void	cd(char *path, t_env *env);
-void	echo(char **splitter);
-void	env(t_env *env);
-void	export(t_env **env, char *arg);
+int		pwd(void);
+int		cd(char *path, t_env *env);
+int		echo(char **splitter);
+int		env(t_env *env);
+int		export(t_env **env, char *arg);
 #endif

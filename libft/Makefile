@@ -1,5 +1,5 @@
 NAME	= libft.a
-CC		= gcc
+CC		= cc
 CFLAGS	= -Wall -Wextra -Werror
 SRCS	= ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c ft_strlen.c ft_memset.c ft_bzero.c ft_memcpy.c ft_memmove.c ft_strlcpy.c \
 ft_strlcat.c ft_toupper.c ft_tolower.c ft_strchr.c ft_strrchr.c ft_strncmp.c ft_memchr.c ft_memcmp.c ft_strnstr.c ft_atoi.c ft_calloc.c ft_strdup.c \
@@ -10,20 +10,32 @@ SRCS_BONUS = ft_lstnew_bonus.c ft_lstadd_front_bonus.c ft_lstsize_bonus.c ft_lst
 ft_lstiter_bonus.c ft_lstmap_bonus.c
 BONUS = $(SRCS_BONUS:.c=.o)
 
+RED =\033[1;31m
+GREEN =\033[1;32m
+CYAN =\033[1;36m
+COLOR_OFF =\033[0m
+
+BIGREEN=\033[1;92m
+
+%.o : %.c
+	@$(CC) $(CFLAGS) -c $^
 
 $(NAME) : $(OBJS)
-	ar rcs $(NAME) $(OBJS)
+	@ar rcs $(NAME) $(OBJS)
 
 all: $(NAME)
+	@echo "$(GREEN) Libft ready.$(COLOR_OFF)"
 
 bonus: $(OBJS) $(BONUS)
-	ar rcs ${NAME} $(OBJS) $(BONUS)
+	@ar rcs ${NAME} $(OBJS) $(BONUS)
 
 clean:
-	rm -f $(OBJS) $(BONUS)
+	@rm -f $(OBJS) $(BONUS)
+	@echo "$(CYAN)Libft cleaned.$(COLOR_OFF)"
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
+	@echo "$(RED)Libft destroyed.$(COLOR_OFF)"
 
 re: fclean all
 

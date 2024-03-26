@@ -6,21 +6,25 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 15:46:01 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/26 17:06:28 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*pwd(void)
+int	pwd(void)
 {
 	char *output;
 
 	output = getcwd(NULL, 0);
-	return (output);
+	if (!output)
+		return (0);
+	printf("%s\n", output);
+	free(output);
+	return (1);
 }
 
-void	cd(char *path, t_env *env)
+int	cd(char *path, t_env *env)
 {
 	if (!path)
 	{
@@ -36,9 +40,10 @@ void	cd(char *path, t_env *env)
 	}
 	if (chdir(path) == -1)
 		printf("cd: not a directory : %s\n", path);
+	return (1);
 }
 
-void	echo(char **splitter)
+int	echo(char **splitter)
 {
 	int	i;
 
@@ -54,25 +59,29 @@ void	echo(char **splitter)
 	}
 	if (ft_strncmp(splitter[1], "-n", ft_strlen(splitter[1])))
 		printf("\n");
+	return (1);
 }
 
-void	env(t_env *env)
+int	env(t_env *env)
 {
 	while (env)
 	{
 		printf("%s=%s\n", env->name, env->content);
 		env = env->next;
 	}
+	return (1);
 }
 
-void	export(t_env **e, char *arg)
+int	export(t_env **e, char *arg)
 {
 	char	**splitter_arg;
 	t_env	*new;
 
 	splitter_arg = ft_split(arg, '=');
-	if (!splitter_arg || !splitter_arg[0])
-		return ;
+	if (!splitter_arg)
+		return (0);
+	if (!splitter_arg[0])
+		return (1);
 	if (!splitter_arg[1])
 		new = env_create_list(splitter_arg[0], "0");
 	else
@@ -81,8 +90,9 @@ void	export(t_env **e, char *arg)
 	{
 		perror("malloc");
 		free_splitter(splitter_arg);
-		exit(EXIT_FAILURE);
+		return (0);
 	}
 	env_add(e, new);
 	free_splitter(splitter_arg);
+	return (1);
 }
