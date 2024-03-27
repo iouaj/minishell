@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 17:23:18 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/26 18:13:20 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/27 13:52:09 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,34 +100,3 @@ int	run(t_list *cmds, char **envp)
 	}
 }
 
-// void	print_lst(t_list *lst)
-// {
-// 	int	i;
-
-// 	while (lst)
-// 	{
-// 		i = 0;
-// 		while (lst->(t_cmd *)content.argv)
-// 		{
-// 			printf("")
-// 		}
-
-// 	}
-
-// }
-
-int	main(int argc, char *argv[], char *envp[])
-{
-	t_list	*lst;
-	t_cmd	cmd;
-
-	lst = NULL;
-	cmd.argv = ft_split("echo test", ' ');
-	ft_lstadd_back(&lst, ft_lstnew(&cmd));
-	cmd.argv = ft_split("touch test.txt", ' ');
-	ft_lstadd_back(&lst, ft_lstnew(&cmd));
-	cmd.argv = ft_split("cat utils.c", ' ');
-	ft_lstadd_back(&lst, ft_lstnew(&cmd));
-	printf("%d\n", run(lst, envp));
-	ft_lstclear(&lst, free);
-}

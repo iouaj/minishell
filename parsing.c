@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:45:27 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/26 17:16:04 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/27 17:06:51 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ int	exec_others(char *argv[], char *envp[])
 			path = ft_strjoin("/bin/", argv[0]);
 			if (execve(path, argv, envp) == -1)
 				printf("%s: command not found\n", argv[0]);
+			printf("command worked/n");
 			free(path);
 		}
 		exit(EXIT_SUCCESS);
@@ -135,12 +136,7 @@ int	parsing(char *str, t_env **e, char *envp[])
 	if (!splitter)
 		return (0);
 	check_env(splitter, *e);
-	if (check_pipe(splitter))
-	{
-		free_splitter(splitter);
-		return (1);
-	}
-	else if (!ft_strncmp(splitter[0], "pwd", ft_strlen(splitter[0])))
+	if (!ft_strncmp(splitter[0], "pwd", ft_strlen(splitter[0])))
 		value = pwd();
 	else if (!ft_strncmp(splitter[0], "cd", ft_strlen(splitter[0])))
 		value = cd(splitter[1], *e);
@@ -155,9 +151,9 @@ int	parsing(char *str, t_env **e, char *envp[])
 	else if (!ft_strncmp(splitter[0], "unset", ft_strlen(splitter[0])))
 		value = env_delete(e, splitter[1]);
 	else
-	{
 		value = exec_others(splitter, envp);
-	}
 	free_splitter(splitter);
 	return (value);
 }
+
+

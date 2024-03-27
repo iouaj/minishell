@@ -6,11 +6,11 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/27 15:15:58 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/27 15:25:21 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "mini.h"
 
 int	pwd(void)
 {
@@ -24,55 +24,68 @@ int	pwd(void)
 	return (1);
 }
 
-int	cd(char *path, t_env *env)
+int	cd(t_list *cmd, t_env *e)
 {
-	(void) env;
-	if (!path)
+	char *path;
+	t_token	*token;
+
+	if (!cmd)
 	{
-		path = get_env("HOME", env);
+		path = get_env("HOME", e);
 	}
+	else
+		token = (t_token *) cmd->next->content;
+		path = token->str;
 	if (chdir(path) == -1)
 		printf("cd: not a directory : %s\n", path);
 	return (1);
 }
 
-int	echo(char **splitter)
+int	echo(t_list *cmd)
 {
-	int	i;
+	t_token *token;
+	int	trigger;
 
-	i = 1;
-	if (!ft_strncmp(splitter[i], "-n", ft_strlen(splitter[i])))
-		i++;
-	while (splitter[i])
+	cmd = cmd->next;
+	token = (t_token *) cmd->content;
+	trigger = 0;
+	if (!ft_strncmp(token->str, "-n", ft_strlen(token->str)))
 	{
-		printf("%s", splitter[i]);
-		i++;
-		if (splitter[i])
-			printf(" ");
+		if (cmd->next && cmd->next->next)
+			cmd = cmd->next->next;
+		else
+			return (1);
 	}
-	if (ft_strncmp(splitter[1], "-n", ft_strlen(splitter[1])))
+	while (cmd)
+	{
+		token = (t_token *) cmd->content;
+		printf("%s", token->str);
+		cmd = cmd->next;
+	}
+	if (!trigger)
 		printf("\n");
 	return (1);
 }
 
-int	env(t_env *env)
+int	env(t_env *e)
 {
-	while (env)
+	while (e)
 	{
-		printf("%s=%s\n", env->name, env->content);
-		env = env->next;
+		printf("%s=%s\n", e->name, e->content);
+		e = e->next;
 	}
 	return (1);
 }
 
-int	export(t_env **e, char *arg)
+int	export(t_env **e, t_list *cmd)
 {
 	char	**splitter_arg;
 	t_env	*new;
 
-	if (!arg)
+	cmd = cmd->next;
+	if (!cmd)
 		return (1);
-	splitter_arg = ft_split(arg, '=');
+	splitter_arg = ft_split(cmd, '=');
 	if (!splitter_arg)
 		return (0);
 	if (!splitter_arg[0])
@@ -89,5 +102,5 @@ int	export(t_env **e, char *arg)
 	}
 	env_add(e, new);
 	free_splitter(splitter_arg);
-	return (1);
+	return (export(e, cmd->next));
 }
