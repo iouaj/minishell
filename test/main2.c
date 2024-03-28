@@ -6,73 +6,38 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 13:52:01 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/27 18:16:05 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/28 14:56:27 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "mini.h"
 
-int	get_argc(t_list *cmd)
+void	child_execve(t_pipeline *pipe, char *envp[])
 {
-	int	i;
-
-	i = 0;
-	while (cmd)
-	{
-		i++;
-		cmd = cmd->next;
-	}
-	return (i);
-}
-
-char **get_argv(t_list *cmd)
-{
-	char	**argv;
-	int		i;
-	t_token	*token;
-
-	argv = malloc(sizeof(char *) * (get_argc(cmd) + 1));
-	if (argv)
-		return (NULL);
-	i = 0;
-	while (cmd)
-	{
-		token = (t_token *) cmd->content;
-		if (ft_strncmp(token->str, " ", ft_strlen(token->str)))
-		{
-			argv[i] = token->str;
-			i++;
-		}
-		cmd = cmd->next;
-	}
-	return (argv);
-}
-
-void	child_execve(t_list *cmd, char *envp[])
-{
-	char	**argv;
 	char	*path;
 
-	argv = get_argv(cmd);
-	if (!argv)
-		exit(0);
-	if (!ft_strncmp(argv[0], "./", 2))
+	if (!ft_strncmp(pipe->argv[0], "./", 2))
 	{
-		if (execve(argv[0], argv, envp) == -1)
-			printf("%s: no such file or directory\n", argv[0]);
+		if (execve(pipe->argv[0], pipe->argv, envp) == -1)
+		{
+			printf("%s: no such file or directory\n", pipe->argv[0]);
+			pipe->exit_code = EXIT_FAILURE;
+		}
 	}
 	else
 	{
-		path = ft_strjoin("/bin/", argv[0]);
-		if (execve(path, argv, envp) == -1)
-			printf("%s: command not found\n", argv[0]);
+		path = ft_strjoin("/bin/", pipe->argv[0]);
+		if (execve(path, pipe->argv, envp) == -1)
+		{
+			printf("%s: command not found\n", pipe->argv[0]);
+			pipe->exit_code = EXIT_FAILURE;
+		}
 		free(path);
 	}
-	free(argv);
 	exit(1);
 }
 
-int	exec_others(t_list *cmd, char *envp[])
+int	exec_others(t_pipeline *pipe, char *envp[])
 {
 	int		pid;
 	int		wstatus;
@@ -81,7 +46,7 @@ int	exec_others(t_list *cmd, char *envp[])
 	if (pid == -1)
 		return (0);
 	else if (!pid)
-		child_execve(cmd, envp);
+		child_execve(pipe, envp);
 	else
 		waitpid(pid, &wstatus, 0);
 	return (WEXITSTATUS(wstatus));
@@ -89,29 +54,28 @@ int	exec_others(t_list *cmd, char *envp[])
 
 int	exec(t_list *cmd, t_env **e, char *envp[])
 {
-	int	value;
-	t_token *token;
+	t_pipeline	*pipe;
 
-	token = NULL;
+	pipe = NULL;
 	if (cmd)
-		token = (t_token *)(*cmd).content;
-	if (!ft_strncmp(token->str, "pwd", ft_strlen(token->str)))
-		value = pwd();
-	else if (!ft_strncmp(token->str, "cd", ft_strlen(token->str)))
-		value = cd(cmd->next, *e);
-	else if (!ft_strncmp(token->str, "echo", ft_strlen(token->str)))
-		value = echo(cmd->next);
-	else if (!ft_strncmp(token->str, "exit", ft_strlen(token->str)))
-		value = 0;
-	else if (!ft_strncmp(token->str, "env", ft_strlen(token->str)))
-		value = env(*e);
-	else if (!ft_strncmp(token->str, "export", ft_strlen(token->str)))
-		value = export(e, cmd->next);
-	else if (!ft_strncmp(token->str, "unset", ft_strlen(token->str)))
-		value = env_delete(e, NULL);
+		pipe = (t_pipeline *)(*cmd).content;
+	if (!ft_strncmp(pipe->argv[0], "pwd", ft_strlen(pipe->argv[0])))
+		pipe->exit_code = pwd();
+	else if (!ft_strncmp(pipe->argv[0], "cd", ft_strlen(pipe->argv[0])))
+		pipe->exit_code = cd(pipe, *e);
+	else if (!ft_strncmp(pipe->argv[0], "echo", ft_strlen(pipe->argv[0])))
+		pipe->exit_code = echo(pipe);
+	else if (!ft_strncmp(pipe->argv[0], "exit", ft_strlen(pipe->argv[0])))
+		pipe->exit_code = 0;
+	else if (!ft_strncmp(pipe->argv[0], "env", ft_strlen(pipe->argv[0])))
+		pipe->exit_code = env(*e);
+	else if (!ft_strncmp(pipe->argv[0], "export", ft_strlen(pipe->argv[0])))
+		pipe->exit_code = export(e, pipe, 1);
+	else if (!ft_strncmp(pipe->argv[0], "unset", ft_strlen(pipe->argv[0])))
+		pipe->exit_code = env_delete(e, NULL);
 	else
-		value = exec_others(cmd, envp);
-	return (value);
+		pipe->exit_code = exec_others(pipe, envp);
+	return (pipe->exit_code);
 }
 
 

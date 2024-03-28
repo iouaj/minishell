@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 13:53:16 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/27 17:41:38 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/28 14:55:10 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,15 @@
 # include <signal.h>
 # include <termios.h>
 # include "../libft/libft.h"
+
+typedef struct s_pipeline
+{
+	char	**argv;
+	char	*eof;
+	int		fd_in;
+	int		fd_out;
+	int		exit_code;
+}	t_pipeline;
 
 typedef struct s_token
 {
@@ -46,10 +55,10 @@ char	*get_env(char *name, t_env *e);
 
 //builtins
 int	pwd(void);
-int	cd(t_list *cmd, t_env *e);
-int	echo(t_list *cmd);
+int	cd(t_pipeline *pipe, t_env *e);
+int	echo(t_pipeline *pipe);
 int	env(t_env *e);
-int	export(t_env **e, t_list *cmd);
+int	export(t_env **e, t_pipeline *pipe, int i);
 
 void	free_splitter(char **splitter);
 int	exec(t_list *cmd, t_env **e, char *envp[]);

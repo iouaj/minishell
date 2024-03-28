@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/27 18:25:00 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/28 14:08:09 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,50 +21,40 @@ int	pwd(void)
 		return (0);
 	printf("%s\n", output);
 	free(output);
-	return (1);
+	return (EXIT_SUCCESS);
 }
 
-int	cd(t_list *cmd, t_env *e)
+int	cd(t_pipeline *pipe, t_env *e)
 {
 	char *path;
-	t_token	*token;
 
-	if (!cmd)
-	{
+	if (!pipe->argv[1])
 		path = get_env("HOME", e);
-	}
 	else
-		token = (t_token *) cmd->next->content;
-		path = token->str;
+		path = pipe->argv[1];
 	if (chdir(path) == -1)
+	{
 		printf("cd: not a directory : %s\n", path);
-	return (1);
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
 }
 
-int	echo(t_list *cmd)
+int	echo(t_pipeline *pipe)
 {
-	t_token *token;
-	int	trigger;
+	int	i;
 
-	cmd = cmd->next;
-	token = (t_token *) cmd->content;
-	trigger = 0;
-	if (!ft_strncmp(token->str, "-n", ft_strlen(token->str)))
+	i = 0;
+	if (!ft_strncmp(pipe->argv[0], "-n", ft_strlen(pipe->argv[0])))
+		i++;
+	while (pipe->argv[i])
 	{
-		if (cmd->next && cmd->next->next)
-			cmd = cmd->next->next;
-		else
-			return (1);
+		printf("%s", pipe->argv[i]);
+		i++;
 	}
-	while (cmd)
-	{
-		token = (t_token *) cmd->content;
-		printf("%s", token->str);
-		cmd = cmd->next;
-	}
-	if (!trigger)
+	if (ft_strncmp(pipe->argv[0], "-n", ft_strlen(pipe->argv[0])))
 		printf("\n");
-	return (1);
+	return (EXIT_SUCCESS);
 }
 
 int	env(t_env *e)
@@ -74,24 +64,21 @@ int	env(t_env *e)
 		printf("%s=%s\n", e->name, e->content);
 		e = e->next;
 	}
-	return (1);
+	return (EXIT_SUCCESS);
 }
 
-int	export(t_env **e, t_list *cmd)
+int	export(t_env **e, t_pipeline *pipe, int i)
 {
 	char	**splitter_arg;
 	t_env	*new;
-	t_token	*token;
 
-	cmd = cmd->next;
-	if (!cmd)
-		return (1);
-	token = (t_token *)cmd->content;
-	splitter_arg = ft_split(token->str, '=');
+	if (!pipe->argv[i])
+		return (EXIT_SUCCESS);
+	splitter_arg = ft_split(pipe->argv[i], '=');
 	if (!splitter_arg)
-		return (0);
+		return (EXIT_FAILURE);
 	if (!splitter_arg[0])
-		return (1);
+		return (EXIT_SUCCESS);
 	if (!splitter_arg[1])
 		new = env_create_list(splitter_arg[0], "0");
 	else
@@ -100,11 +87,11 @@ int	export(t_env **e, t_list *cmd)
 	{
 		perror("malloc");
 		free_splitter(splitter_arg);
-		return (0);
+		return (EXIT_FAILURE);
 	}
 	env_add(e, new);
 	free_splitter(splitter_arg);
-	return (export(e, cmd->next));
+	return (export(e, pipe, i + 1));
 }
 
 void	free_splitter(char **splitter)
