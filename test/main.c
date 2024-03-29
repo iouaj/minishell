@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:21:30 by souaguen          #+#    #+#             */
-/*   Updated: 2024/03/28 15:05:31 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/29 18:00:04 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void	read_argv(char **argv)
 	// free(argv);
 }
 
-int	main(int argc, char **argv, char *envp[])
+int	pipe_create(int argc, char *input, char *envp[], t_env **e)
 {
 	t_pipeline	*pipln;
 	t_list		*pipeline;
@@ -147,18 +147,17 @@ int	main(int argc, char **argv, char *envp[])
 	t_list		*backup;
 	t_list		*new;
 	char		*str;
-	t_env		*e;
+	int	value;
 
 	pipeline = NULL;
 	if (argc != 2)
 		return (1);
-	lst = parsing_init(argv[1]);
+	lst = parsing_init(input);
 	parsed = ft_lstmap(lst, ft_env, free);
 	backup = parsed;
 	while (parsed != NULL)
 	{
 		new = get_new_pipe(&parsed);
-		printf("NEW_PIPELINE\n\n");
 		//read_list(new);
 		pipln = malloc(sizeof(t_pipeline));
 		(*pipln).argv = lst_to_argv(new);
@@ -167,20 +166,46 @@ int	main(int argc, char **argv, char *envp[])
 		(*pipln).eof = NULL;
 		(*pipln).exit_code = 0;
 		ft_lstadd_back(&pipeline, ft_lstnew(pipln));
-		read_argv((*pipln).argv);
+		// read_argv((*pipln).argv);
 		free_lst(new);
 	}
-	e = get_env_list(envp);
-	printf("Getting env\n");
-	// Run exec with linked list (t_list *pipeline) here
-	while (pipeline)
-	{
-		exec(pipeline, &e, envp);
-		pipeline = pipeline->next;
-	}
-	// run(pipeline);
-	//
+	value = run(pipeline, e, envp);
+	set_error(e, value);
 	ft_lstclear(&lst, &free_quoted);
 	ft_lstclear(&backup, &free_quoted);
+	ft_lstclear(&pipeline, &free_pipeline);
+	return (value);
+}
+
+int	main(int argc, char *argv[], char *envp[])
+{
+	char				*str;
+	t_env	*e;
+
+	(void) argc;
+	(void) argv;
+	str = NULL;
+	e = get_env_list(envp);
+	if (!e)
+	{
+		printf("Malloc error\n");
+		return (1);
+	}
+	while (1)
+	{
+		if (str)
+			free(str);
+		str = readline("\033[1;34mminishell$> \033[0m");
+		if (str && str[0])
+		{
+			add_history(str);
+			if (pipe_create(2, str, envp, &e) == EXIT_FAILURE)
+				break ;
+		}
+	}
+	printf("\n\ngoodbye\n");
+	clear_history();
+	free(str);
+	free_env(e);
 	return (0);
 }

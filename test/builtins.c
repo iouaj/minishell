@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/28 14:08:09 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/29 16:32:07 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	pwd(void)
 {
-	char *output;
+	char	*output;
 
 	output = getcwd(NULL, 0);
 	if (!output)
@@ -26,7 +26,7 @@ int	pwd(void)
 
 int	cd(t_pipeline *pipe, t_env *e)
 {
-	char *path;
+	char	*path;
 
 	if (!pipe->argv[1])
 		path = get_env("HOME", e);
@@ -44,15 +44,15 @@ int	echo(t_pipeline *pipe)
 {
 	int	i;
 
-	i = 0;
-	if (!ft_strncmp(pipe->argv[0], "-n", ft_strlen(pipe->argv[0])))
+	i = 1;
+	if (!ft_strncmp(pipe->argv[1], "-n", ft_strlen(pipe->argv[1])))
 		i++;
 	while (pipe->argv[i])
 	{
 		printf("%s", pipe->argv[i]);
 		i++;
 	}
-	if (ft_strncmp(pipe->argv[0], "-n", ft_strlen(pipe->argv[0])))
+	if (ft_strncmp(pipe->argv[1], "-n", ft_strlen(pipe->argv[1])))
 		printf("\n");
 	return (EXIT_SUCCESS);
 }
@@ -92,17 +92,4 @@ int	export(t_env **e, t_pipeline *pipe, int i)
 	env_add(e, new);
 	free_splitter(splitter_arg);
 	return (export(e, pipe, i + 1));
-}
-
-void	free_splitter(char **splitter)
-{
-	int	i;
-
-	i = 0;
-	while (splitter[i])
-	{
-		free(splitter[i]);
-		i++;
-	}
-	free(splitter);
 }

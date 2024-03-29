@@ -6,7 +6,7 @@
 #    By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/08 21:52:24 by  souaguen         #+#    #+#              #
-#    Updated: 2024/03/27 17:39:04 by iouajjou         ###   ########.fr        #
+#    Updated: 2024/03/29 16:44:55 by iouajjou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,9 @@ SRC= main.c \
     src/ft_env_parsing.c \
 	main2.c \
 	env.c \
-	builtins.c
+	builtins.c \
+	pipe.c \
+	utils.c
 
 NAME=minishell
 OBJ=$(SRC:.c=.o)

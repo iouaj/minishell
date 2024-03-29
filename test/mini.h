@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 13:53:16 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/28 14:55:10 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/29 17:58:29 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ typedef struct s_token
 	int		quoted;
 }	t_token;
 
-typedef struct	s_env
+typedef struct s_env
 {
 	char			*name;
 	char			*content;
@@ -54,12 +54,15 @@ int		env_delete(t_env **env, char *name);
 char	*get_env(char *name, t_env *e);
 
 //builtins
-int	pwd(void);
-int	cd(t_pipeline *pipe, t_env *e);
-int	echo(t_pipeline *pipe);
-int	env(t_env *e);
-int	export(t_env **e, t_pipeline *pipe, int i);
+int		pwd(void);
+int		cd(t_pipeline *pipe, t_env *e);
+int		echo(t_pipeline *pipe);
+int		env(t_env *e);
+int		export(t_env **e, t_pipeline *pipe, int i);
 
 void	free_splitter(char **splitter);
-int	exec(t_list *cmd, t_env **e, char *envp[]);
+int		exec(t_list *cmd, t_env **e, char *envp[]);
+
+void	set_error(t_env **e, int value);
+void	free_pipeline(void *content);
 #endif

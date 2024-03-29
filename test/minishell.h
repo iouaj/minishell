@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 11:14:05 by souaguen          #+#    #+#             */
-/*   Updated: 2024/03/28 14:55:16 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/29 16:28:02 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,7 @@ t_list	*parsing_init(char *cmd);
 char	*ft_strtok(char **ptr, char *delim);
 void	*ft_env(void *content);
 void	free_quoted(void *ptr);
+
+int		run(t_list *cmds, t_env **e, char **envp);
 
 #endif

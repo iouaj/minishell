@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 13:52:01 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/28 14:56:27 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/29 16:28:50 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void	child_execve(t_pipeline *pipe, char *envp[])
 		if (execve(pipe->argv[0], pipe->argv, envp) == -1)
 		{
 			printf("%s: no such file or directory\n", pipe->argv[0]);
-			pipe->exit_code = EXIT_FAILURE;
 		}
 	}
 	else
@@ -30,11 +29,10 @@ void	child_execve(t_pipeline *pipe, char *envp[])
 		if (execve(path, pipe->argv, envp) == -1)
 		{
 			printf("%s: command not found\n", pipe->argv[0]);
-			pipe->exit_code = EXIT_FAILURE;
 		}
 		free(path);
 	}
-	exit(1);
+	exit(EXIT_SUCCESS);
 }
 
 int	exec_others(t_pipeline *pipe, char *envp[])
@@ -66,7 +64,7 @@ int	exec(t_list *cmd, t_env **e, char *envp[])
 	else if (!ft_strncmp(pipe->argv[0], "echo", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = echo(pipe);
 	else if (!ft_strncmp(pipe->argv[0], "exit", ft_strlen(pipe->argv[0])))
-		pipe->exit_code = 0;
+		pipe->exit_code = EXIT_FAILURE;
 	else if (!ft_strncmp(pipe->argv[0], "env", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = env(*e);
 	else if (!ft_strncmp(pipe->argv[0], "export", ft_strlen(pipe->argv[0])))
@@ -77,6 +75,3 @@ int	exec(t_list *cmd, t_env **e, char *envp[])
 		pipe->exit_code = exec_others(pipe, envp);
 	return (pipe->exit_code);
 }
-
-
-

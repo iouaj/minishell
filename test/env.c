@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:04:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/27 18:07:38 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/03/29 18:05:02 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ t_env	*get_env_list(char *envp[])
 {
 	t_env	*env;
 	char	**splitter_envp;
-	int	i;
+	int		i;
 
 	i = 0;
 	env = NULL;
@@ -34,6 +34,9 @@ t_env	*get_env_list(char *envp[])
 		free_splitter(splitter_envp);
 		i++;
 	}
+	// env_add(&env, env_create_list("?", "0"));
+	// if (!env)
+	// 	return (NULL);
 	return (env);
 }
 
@@ -84,7 +87,7 @@ void	env_add(t_env **lst, t_env *new)
 
 void	free_env(t_env *env)
 {
-	t_env *next;
+	t_env	*next;
 
 	while (env)
 	{
@@ -106,11 +109,12 @@ int	env_delete(t_env **e, char *name)
 	if (!ft_strncmp((*e)->name, name, ft_strlen((*e)->name)))
 	{
 		*e = (*e)->next;
-		return (1);
+		return (EXIT_SUCCESS);
 	}
 	while (*e)
 	{
-		if ((*e)->next && !ft_strncmp((*e)->next->name, name, ft_strlen((*e)->name)))
+		if ((*e)->next
+			&& !ft_strncmp((*e)->next->name, name, ft_strlen((*e)->name)))
 		{
 			to_delete = (*e)->next;
 			(*e)->next = (*e)->next->next;
@@ -121,16 +125,5 @@ int	env_delete(t_env **e, char *name)
 		*e = (*e)->next;
 	}
 	*e = temp;
-	return (1);
-}
-
-char	*get_env(char *name, t_env *e)
-{
-	while (e)
-	{
-		if (!ft_strncmp(e->name, name, ft_strlen(e->name)))
-			return (e->content);
-		e = e->next;
-	}
-	return (" ");
+	return (EXIT_SUCCESS);
 }
