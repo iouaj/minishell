@@ -6,7 +6,7 @@
 #    By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/08 21:52:24 by  souaguen         #+#    #+#              #
-#    Updated: 2024/04/01 15:22:10 by iouajjou         ###   ########.fr        #
+#    Updated: 2024/04/01 15:39:58 by iouajjou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ FILES =	main \
 		ft_strtok \
 		ft_parsing \
 		ft_env_parsing \
-		main2 \
+		exec \
 		env \
 		builtins \
 		pipe \

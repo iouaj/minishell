@@ -6,12 +6,14 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:21:30 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/01 14:09:11 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/01 15:41:14 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "minishell.h"
+
+int g_sig = 1;
 
 t_list	*get_new_pipe(t_list **lst)
 {
@@ -137,17 +139,48 @@ int	pipe_create(char *input, char *envp[], t_env **e)
 		free_lst(new);
 	}
 	value = run(pipeline, e, envp);
-	// printf("%d\n", value);
-	// set_error(e, value);
 	ft_lstclear(&lst, &free_quoted);
 	ft_lstclear(&backup, &free_quoted);
 	ft_lstclear(&pipeline, &free_pipeline);
 	return (value);
 }
 
+//Change termios
+//Ctrl D will now exit minishell, Ctrl C create a newline and Ctrl \ will do nothing.
+void	settermios(struct termios old_term)
+{
+	struct termios	new_term;
+
+	new_term = old_term;
+	new_term.c_cc[VINTR] = 4;
+	new_term.c_cc[VEOF] = 3;
+	new_term.c_cc[VQUIT] = 0;
+	tcsetattr(0, TCSANOW, &new_term);
+}
+
+void	handle_sigusr(int sig, siginfo_t *siginfo, void *context)
+{
+	(void) sig;
+	(void) context;
+	g_sig = 0;
+	if (close(siginfo->si_fd) == -1)
+		printf("error\n");
+}
+
+void	setsignal(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = &handle_sigusr;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
+}
+
 int	main(int argc, char *argv[], char *envp[])
 {
 	char				*str;
+	struct termios		old_term;
 	t_env	*e;
 
 	(void) argc;
@@ -159,7 +192,10 @@ int	main(int argc, char *argv[], char *envp[])
 		perror("malloc");
 		return (1);
 	}
-	while (1)
+	tcgetattr(0, &old_term);
+	settermios(old_term);
+	setsignal();
+	while (g_sig)
 	{
 		if (str)
 			free(str);
@@ -171,7 +207,6 @@ int	main(int argc, char *argv[], char *envp[])
 				break ;
 		}
 	}
-	printf("\n\ngoodbye\n");
 	clear_history();
 	free(str);
 	free_env(e);

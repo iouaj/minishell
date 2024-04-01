@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 11:14:05 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/01 14:07:24 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/01 15:39:21 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <termios.h>
-# include "../libft/libft.h"
+# include "libft/libft.h"
 # include <errno.h>
 
 typedef struct s_pipeline
