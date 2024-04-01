@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main2.c                                            :+:      :+:    :+:   */
+/*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/27 13:52:01 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/29 16:28:50 by iouajjou         ###   ########.fr       */
+/*   Created: 2024/04/01 15:23:58 by iouajjou          #+#    #+#             */
+/*   Updated: 2024/04/01 15:24:05 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mini.h"
+#include "minishell.h"
 
 void	child_execve(t_pipeline *pipe, char *envp[])
 {
@@ -19,20 +19,16 @@ void	child_execve(t_pipeline *pipe, char *envp[])
 	if (!ft_strncmp(pipe->argv[0], "./", 2))
 	{
 		if (execve(pipe->argv[0], pipe->argv, envp) == -1)
-		{
-			printf("%s: no such file or directory\n", pipe->argv[0]);
-		}
+			error("execve");
 	}
 	else
 	{
 		path = ft_strjoin("/bin/", pipe->argv[0]);
 		if (execve(path, pipe->argv, envp) == -1)
-		{
-			printf("%s: command not found\n", pipe->argv[0]);
-		}
+			error("execve");
 		free(path);
 	}
-	exit(EXIT_SUCCESS);
+	exit(errno);
 }
 
 int	exec_others(t_pipeline *pipe, char *envp[])

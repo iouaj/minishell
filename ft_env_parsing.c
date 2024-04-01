@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_env_parsing.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 18:03:31 by souaguen          #+#    #+#             */
-/*   Updated: 2024/03/26 18:04:29 by souaguen         ###   ########.fr       */
+/*   Updated: 2024/04/01 15:12:56 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*ft_replace_env(char *str)
 	char	backup;
 	int		i;
 	int		start;
-	
+
 	i = 0;
 	start = 0;
 	lst = NULL;
@@ -67,7 +67,7 @@ char	*ft_replace_env(char *str)
 	}
 	ft_lstadd_back(&lst, ft_lstnew(ft_strdup(str + start)));
 	return (ft_lstto_str(&lst));
-}	
+}
 
 void	*ft_env(void *content)
 {

@@ -6,97 +6,99 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 17:23:18 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/27 13:52:09 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/01 14:20:19 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-typedef struct s_cmd
+void	read_file(int fd_to_read, int fd_to_write)
 {
-	char	**argv;
-}	t_cmd;
+	char	buf;
 
-void	exec_cmd(char **argv, char **envp)
+	while (read(fd_to_read, &buf, 1) > 0)
+		ft_putchar_fd(buf, fd_to_write);
+}
+
+int	checkcmd(t_list *cmds, t_env **e)
 {
-	char *path;
-	int	pid;
+	t_pipeline	*pipe;
+	int			i;
+	int			exit_value;
 
-	pid = fork();
-	if (!pid)
+	pipe = (t_pipeline *) cmds->content;
+	exit_value = -1;
+	if (!ft_strncmp(pipe->argv[0], "export", ft_strlen(pipe->argv[0])))
+		exit_value = export(e, pipe, 1);
+	else if (!ft_strncmp(pipe->argv[0], "unset", ft_strlen(pipe->argv[0])))
 	{
-		if (!ft_strncmp(argv[0], "./", 2))
+		i = 1;
+		while (pipe->argv[i] && exit_value != EXIT_FAILURE)
 		{
-			if (execve(argv[0], argv, envp) == -1)
-				printf("%s: no such file or directory\n", argv[0]);
+			exit_value = env_delete(e, pipe->argv[i]);
+			i++;
 		}
-		else
-		{
-			path = ft_strjoin("/bin/", argv[0]);
-			if (execve(path, argv, envp) == -1)
-				printf("%s: command not found\n", argv[0]);
-			free(path);
-		}
-		exit(EXIT_SUCCESS);
 	}
-	else if (pid == -1)
-		return ;
-	else
-		waitpid(pid, NULL, 0);
-	return ;
+	return (exit_value);
 }
 
-void	read_file(int fd, int value)
+int	child_process(t_list *cmds, t_env **e, char *envp[], int pipefd[2])
 {
-	return ;
+	int	fd;
+	int	exit_value;
+	t_pipeline	*pipe;
+
+	pipe = (t_pipeline *) cmds->content;
+	close(pipefd[0]);
+	fd = dup(pipe->fd_out);
+	dup2(pipefd[1], pipe->fd_out);
+	exit_value = exec(cmds, e, envp);
+	dup2(fd, pipe->fd_out);
+	close(pipefd[1]);
+	close(fd);
+	exit(exit_value);
 }
 
-int	run(t_list *cmds, char **envp)
+int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[])
+{
+	int	fd;
+	int	wstatus;
+	t_pipeline	*pipe;
+
+	pipe = (t_pipeline *) cmds->content;
+	close(pipefd[1]);
+	if (cmds != NULL && (*cmds).next != NULL)
+	{
+		fd = dup(pipe->fd_in);
+		dup2(pipefd[0], pipe->fd_in);
+		run((*cmds).next, e, envp);
+		dup2(fd, pipe->fd_in);
+		close(fd);
+	}
+	else
+		read_file(pipefd[0], pipe->fd_out);
+	close(pipefd[0]);
+	waitpid(-1, &wstatus, 0);
+	return (WEXITSTATUS(wstatus));
+}
+
+int	run(t_list *cmds, t_env **e, char *envp[])
 {
 	pid_t		pid;
 	int			pipefd[2];
-	int			wstatus;
-	int			fd;
 
 	if (pipe(pipefd) == -1)
 	{
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
+	if (checkcmd(cmds, e) != -1)
+		return (EXIT_SUCCESS);
 	pid = fork();
-	printf("%d\n", pid);
 	if (pid < 0)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
-	}
+		return (error("fork"));
 	else if (pid == 0)
-	{
-		close(pipefd[0]);
-		fd = dup(1);
-		dup2(pipefd[1], 1);
-		exec_cmd((*cmds).content, envp);
-		dup2(fd, 1);
-		close(pipefd[1]);
-		close(fd);
-		exit(EXIT_SUCCESS);
-	}
+		return (child_process(cmds, e, envp, pipefd));
 	else
-	{
-		close(pipefd[1]);
-		if (cmds != NULL && (*cmds).next != NULL)
-		{
-			fd = dup(0);
-			dup2(pipefd[0], 0);
-			run((*cmds).next, envp);
-			dup2(fd, 0);
-			close(fd);
-		}
-		else
-			read_file(pipefd[0], 1);
-		close(pipefd[0]);
-		waitpid(-1, &wstatus, 0);
-		return (WEXITSTATUS(wstatus));
-	}
+		return (parent_process(cmds, e, envp, pipefd));
 }
-

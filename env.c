@@ -6,62 +6,25 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:04:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/26 16:39:58 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/01 15:08:15 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_env	*get_env_list(char *envp[])
+void	free_env(t_env *env)
 {
-	t_env	*env;
-	char	**splitter_envp;
-	int	i;
+	t_env	*next;
 
-	i = 0;
-	env = NULL;
-	while (envp && envp[i])
+	while (env)
 	{
-		splitter_envp = ft_split(envp[i], '=');
-		if (!splitter_envp)
-		{
-			free_env(env);
-			return (NULL);
-		}
-		env_add(&env, env_create_list(splitter_envp[0], splitter_envp[1]));
-		if (!env)
-			return (NULL);
-		free_splitter(splitter_envp);
-		i++;
-	}
-	return (env);
-}
-
-t_env	*env_create_list(char *name, char *content)
-{
-	t_env	*env;
-
-	env = malloc(sizeof(t_env));
-	if (!env)
-		return (NULL);
-	env->name = ft_strdup(name);
-	if (!env->name)
-	{
+		free(env->content);
+		free(env->name);
+		next = env->next;
 		free(env);
-		return (NULL);
+		env = next;
 	}
-	if (content)
-	{
-		env->content = ft_strdup(content);
-		if (!env->content)
-		{
-			free(env->content);
-			free(env);
-			return (NULL);
-		}
-	}
-	env->next = NULL;
-	return (env);
+	env = NULL;
 }
 
 void	env_add(t_env **lst, t_env *new)
@@ -80,19 +43,59 @@ void	env_add(t_env **lst, t_env *new)
 	}
 }
 
-void	free_env(t_env *env)
+t_env	*env_create_list(char *name, char *content)
 {
-	t_env *next;
+	t_env	*env;
 
-	while (env)
+	env = malloc(sizeof(t_env));
+	if (!env)
+	{
+		error("malloc");
+		return (NULL);
+	}
+	env->name = ft_strdup(name);
+	if (!env->name)
+	{
+		free(env);
+		error("malloc");
+		return (NULL);
+	}
+	env->content = ft_strdup(content);
+	if (!env->content)
 	{
 		free(env->content);
-		free(env->name);
-		next = env->next;
 		free(env);
-		env = next;
+		error("malloc");
+		return (NULL);
 	}
+	env->next = NULL;
+	return (env);
+}
+
+t_env	*get_env_list(char *envp[])
+{
+	t_env	*env;
+	char	**splitter_envp;
+	int		i;
+
+	i = 0;
 	env = NULL;
+	while (envp && envp[i])
+	{
+		splitter_envp = ft_split(envp[i], '=');
+		if (!splitter_envp)
+		{
+			free_env(env);
+			error("malloc");
+			return (NULL);
+		}
+		env_add(&env, env_create_list(splitter_envp[0], splitter_envp[1]));
+		if (!env)
+			return (NULL);
+		free_splitter(splitter_envp);
+		i++;
+	}
+	return (env);
 }
 
 int	env_delete(t_env **e, char *name)
@@ -104,11 +107,12 @@ int	env_delete(t_env **e, char *name)
 	if (!ft_strncmp((*e)->name, name, ft_strlen((*e)->name)))
 	{
 		*e = (*e)->next;
-		return (1);
+		return (EXIT_SUCCESS);
 	}
 	while (*e)
 	{
-		if ((*e)->next && !ft_strncmp((*e)->next->name, name, ft_strlen((*e)->name)))
+		if ((*e)->next
+			&& !ft_strncmp((*e)->next->name, name, ft_strlen((*e)->name)))
 		{
 			to_delete = (*e)->next;
 			(*e)->next = (*e)->next->next;
@@ -119,16 +123,5 @@ int	env_delete(t_env **e, char *name)
 		*e = (*e)->next;
 	}
 	*e = temp;
-	return (1);
-}
-
-char	*get_env(char *name, t_env *e)
-{
-	while (e)
-	{
-		if (!ft_strncmp(e->name, name, ft_strlen(e->name)))
-			return (e->content);
-		e = e->next;
-	}
-	return (" ");
+	return (EXIT_SUCCESS);
 }

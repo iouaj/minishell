@@ -5,17 +5,17 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/22 15:22:05 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/25 14:15:11 by iouajjou         ###   ########.fr       */
+/*   Created: 2024/03/29 16:31:27 by iouajjou          #+#    #+#             */
+/*   Updated: 2024/04/01 13:02:55 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	error(char *err)
+int	error(char *err)
 {
 	perror(err);
-	exit(EXIT_FAILURE);
+	return (errno);
 }
 
 void	free_splitter(char **splitter)
@@ -31,31 +31,37 @@ void	free_splitter(char **splitter)
 	free(splitter);
 }
 
-char	**ft_strtrim_splitter(char **splitter)
+char	*get_env(char *name, t_env *e)
 {
-	char	*trim;
-	int	i;
-
-	i = 0;
-	while (splitter[i])
+	while (e)
 	{
-		trim = ft_strtrim(splitter[i], " \'\"\n\t");
-		free(splitter[i]);
-		splitter[i] = trim;
-		i++;
+		if (!ft_strncmp(e->name, name, ft_strlen(e->name)))
+			return (e->content);
+		e = e->next;
 	}
-	return (splitter);
+	return (" ");
 }
 
-char	*ft_strupper(char *str)
+void	set_error(t_env **e, int value)
 {
-	int	i;
-
-	i = 0;
-	while (str && str[i])
+	while (*e)
 	{
-		str[i] = ft_toupper(str[i]);
-		i++;
+		if (!ft_strncmp((*e)->name, "?", ft_strlen((*e)->name)))
+		{
+			(*e)->content = ft_itoa(value);
+			if (!(*e)->content)
+				exit(EXIT_FAILURE);
+			return ;
+		}
+		(*e) = (*e)->next;
 	}
-	return (str);
+}
+
+void	free_pipeline(void *content)
+{
+	t_pipeline	*pipeline;
+
+	pipeline = (t_pipeline *) content;
+	free(pipeline->eof);
+	free(pipeline);
 }

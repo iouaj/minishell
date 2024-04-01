@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/03/08 21:52:24 by  souaguen         #+#    #+#              #
+#    Updated: 2024/04/01 15:22:10 by iouajjou         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME = minishell
 
 CC = cc
@@ -5,11 +17,15 @@ CFLAGS = -Wall -Wextra -Werror
 
 INCLUDES = minishell.h
 
-FILES =	minishell \
-		utils \
-		parsing \
+FILES =	main \
+		ft_strtok \
+		ft_parsing \
+		ft_env_parsing \
+		main2 \
+		env \
 		builtins \
-		env
+		pipe \
+		utils \
 
 SRC = $(addsuffix .c, $(FILES))
 

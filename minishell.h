@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/20 15:42:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/26 16:40:11 by iouajjou         ###   ########.fr       */
+/*   Created: 2024/03/23 11:14:05 by souaguen          #+#    #+#             */
+/*   Updated: 2024/04/01 14:07:24 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,25 +21,30 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <termios.h>
-# include "libft/libft.h"
+# include "../libft/libft.h"
+# include <errno.h>
 
-typedef struct	s_env
+typedef struct s_pipeline
+{
+	char	**argv;
+	char	*eof;
+	int		fd_in;
+	int		fd_out;
+	int		exit_code;
+}	t_pipeline;
+
+typedef struct s_token
+{
+	char	*str;
+	int		quoted;
+}	t_token;
+
+typedef struct s_env
 {
 	char			*name;
 	char			*content;
 	struct s_env	*next;
 }	t_env;
-
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-size_t	ft_strlen(const char *s);
-char	*ft_strtrim(char const *s1, char const *set);
-char	**ft_split(char const *s, char c);
-void	free_splitter(char **splitter);
-char	**ft_strtrim_splitter(char **splitter);
-char	*ft_strupper(char *str);
-int		parsing(char *str, t_env **env, char *envp[]);
-void	error(char *err);
-char	*ft_strjoin(char const *s1, char const *s2);
 
 //env
 void	env_add(t_env **lst, t_env *new);
@@ -49,10 +54,24 @@ void	free_env(t_env *env);
 int		env_delete(t_env **env, char *name);
 char	*get_env(char *name, t_env *e);
 
-//Command
+//builtins
 int		pwd(void);
-int		cd(char *path, t_env *env);
-int		echo(char **splitter);
-int		env(t_env *env);
-int		export(t_env **env, char *arg);
+int		cd(t_pipeline *pipe, t_env *e);
+int		echo(t_pipeline *pipe);
+int		env(t_env *e);
+int		export(t_env **e, t_pipeline *pipe, int i);
+
+void	free_splitter(char **splitter);
+int		exec(t_list *cmd, t_env **e, char *envp[]);
+
+void	set_error(t_env **e, int value);
+void	free_pipeline(void *content);
+int		error(char *err);
+
+t_list	*parsing_init(char *cmd);
+char	*ft_strtok(char **ptr, char *delim);
+void	*ft_env(void *content);
+void	free_quoted(void *ptr);
+
+int		run(t_list *cmds, t_env **e, char **envp);
 #endif

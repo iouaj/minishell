@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parsing.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 15:35:43 by souaguen          #+#    #+#             */
-/*   Updated: 2024/03/25 22:12:07 by souaguen         ###   ########.fr       */
+/*   Updated: 2024/04/01 15:12:43 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
+// #include <stdio.h>
 
 void	*update_line(void *content)
 {

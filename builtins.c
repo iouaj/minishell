@@ -6,88 +6,87 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/03/27 15:15:58 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/01 14:08:03 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "minishell.h"
 
 int	pwd(void)
 {
-	char *output;
+	char	*output;
 
 	output = getcwd(NULL, 0);
 	if (!output)
-		return (0);
+		return (error("getcwd"));
 	printf("%s\n", output);
 	free(output);
-	return (1);
+	return (EXIT_SUCCESS);
 }
 
-int	cd(char *path, t_env *env)
+int	cd(t_pipeline *pipe, t_env *e)
 {
-	(void) env;
-	if (!path)
-	{
-		path = get_env("HOME", env);
-	}
+	char	*path;
+
+	if (!pipe->argv[1])
+		path = get_env("HOME", e);
+	else
+		path = pipe->argv[1];
 	if (chdir(path) == -1)
-		printf("cd: not a directory : %s\n", path);
-	return (1);
+		return (error("chdir"));
+	return (EXIT_SUCCESS);
 }
 
-int	echo(char **splitter)
+int	echo(t_pipeline *pipe)
 {
 	int	i;
 
 	i = 1;
-	if (!ft_strncmp(splitter[i], "-n", ft_strlen(splitter[i])))
+	if (!ft_strncmp(pipe->argv[1], "-n", ft_strlen(pipe->argv[1])))
 		i++;
-	while (splitter[i])
+	while (pipe->argv[i])
 	{
-		printf("%s", splitter[i]);
+		printf("%s", pipe->argv[i]);
 		i++;
-		if (splitter[i])
-			printf(" ");
 	}
-	if (ft_strncmp(splitter[1], "-n", ft_strlen(splitter[1])))
+	if (ft_strncmp(pipe->argv[1], "-n", ft_strlen(pipe->argv[1])))
 		printf("\n");
-	return (1);
+	return (EXIT_SUCCESS);
 }
 
-int	env(t_env *env)
+int	env(t_env *e)
 {
-	while (env)
+	while (e)
 	{
-		printf("%s=%s\n", env->name, env->content);
-		env = env->next;
+		printf("%s=%s\n", e->name, e->content);
+		e = e->next;
 	}
-	return (1);
+	return (EXIT_SUCCESS);
 }
 
-int	export(t_env **e, char *arg)
+int	export(t_env **e, t_pipeline *pipe, int i)
 {
 	char	**splitter_arg;
 	t_env	*new;
 
-	if (!arg)
-		return (1);
-	splitter_arg = ft_split(arg, '=');
+	if (!pipe->argv[i])
+		return (EXIT_SUCCESS);
+	splitter_arg = ft_split(pipe->argv[i], '=');
 	if (!splitter_arg)
-		return (0);
+		return (error("malloc"));
 	if (!splitter_arg[0])
-		return (1);
+		return (EXIT_SUCCESS);
 	if (!splitter_arg[1])
 		new = env_create_list(splitter_arg[0], "0");
 	else
 		new = env_create_list(splitter_arg[0], splitter_arg[1]);
 	if (!new)
 	{
-		perror("malloc");
 		free_splitter(splitter_arg);
-		return (0);
+		return (errno);
 	}
 	env_add(e, new);
 	free_splitter(splitter_arg);
-	return (1);
+	return (export(e, pipe, i + 1));
 }

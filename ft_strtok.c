@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtok.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 10:59:19 by souaguen          #+#    #+#             */
-/*   Updated: 2024/03/23 23:30:12 by souaguen         ###   ########.fr       */
+/*   Updated: 2024/04/01 15:12:50 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
 char	*extract_qtoken(char **ptr, char *str, int len)
 {
@@ -52,7 +52,6 @@ char	*extract_token(char **ptr, char *str, int len)
 char	*ft_strtok(char **ptr, char *delim)
 {
 	char	*str;
-	char	*tmp;
 	int		i;
 
 	if (ptr == NULL || *ptr == NULL)

@@ -6,26 +6,12 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:21:30 by souaguen          #+#    #+#             */
-/*   Updated: 2024/03/29 18:00:04 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/01 14:09:11 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "minishell.h"
-
-void	read_list(t_list *lst)
-{
-	t_list	*cursor;
-	t_token	*token;
-
-	cursor = lst;
-	while (cursor != NULL)
-	{
-		token = (t_token *)(*cursor).content;
-		printf("TOKEN: \"%s\"\nQUOTED: %d\n\n", (*token).str, (*token).quoted);
-		cursor = (*cursor).next;
-	}
-}
 
 t_list	*get_new_pipe(t_list **lst)
 {
@@ -124,21 +110,7 @@ char	**lst_to_argv(t_list *lst)
 	return (argv);
 }
 
-void	read_argv(char **argv)
-{
-	int	i;
-
-	i = 0;
-	while (argv[i] != NULL)
-	{
-		printf("%s\n", argv[i]);
-		i++;
-	}
-	printf("\n");
-	// free(argv);
-}
-
-int	pipe_create(int argc, char *input, char *envp[], t_env **e)
+int	pipe_create(char *input, char *envp[], t_env **e)
 {
 	t_pipeline	*pipln;
 	t_list		*pipeline;
@@ -146,19 +118,15 @@ int	pipe_create(int argc, char *input, char *envp[], t_env **e)
 	t_list		*parsed;
 	t_list		*backup;
 	t_list		*new;
-	char		*str;
 	int	value;
 
 	pipeline = NULL;
-	if (argc != 2)
-		return (1);
 	lst = parsing_init(input);
 	parsed = ft_lstmap(lst, ft_env, free);
 	backup = parsed;
 	while (parsed != NULL)
 	{
 		new = get_new_pipe(&parsed);
-		//read_list(new);
 		pipln = malloc(sizeof(t_pipeline));
 		(*pipln).argv = lst_to_argv(new);
 		(*pipln).fd_in = 0;
@@ -166,11 +134,11 @@ int	pipe_create(int argc, char *input, char *envp[], t_env **e)
 		(*pipln).eof = NULL;
 		(*pipln).exit_code = 0;
 		ft_lstadd_back(&pipeline, ft_lstnew(pipln));
-		// read_argv((*pipln).argv);
 		free_lst(new);
 	}
 	value = run(pipeline, e, envp);
-	set_error(e, value);
+	// printf("%d\n", value);
+	// set_error(e, value);
 	ft_lstclear(&lst, &free_quoted);
 	ft_lstclear(&backup, &free_quoted);
 	ft_lstclear(&pipeline, &free_pipeline);
@@ -188,7 +156,7 @@ int	main(int argc, char *argv[], char *envp[])
 	e = get_env_list(envp);
 	if (!e)
 	{
-		printf("Malloc error\n");
+		perror("malloc");
 		return (1);
 	}
 	while (1)
@@ -199,7 +167,7 @@ int	main(int argc, char *argv[], char *envp[])
 		if (str && str[0])
 		{
 			add_history(str);
-			if (pipe_create(2, str, envp, &e) == EXIT_FAILURE)
+			if (pipe_create(str, envp, &e) == EXIT_FAILURE)
 				break ;
 		}
 	}
