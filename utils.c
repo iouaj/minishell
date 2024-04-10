@@ -6,17 +6,19 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 16:31:27 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/01 13:02:55 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 18:10:40 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	error(char *err)
+int	error(char *err, int exit_code)
 {
 	perror(err);
-	return (errno);
+	return (exit_code);
 }
+
+// int	get
 
 void	free_splitter(char **splitter)
 {

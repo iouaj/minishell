@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/10 14:38:06 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 16:49:59 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	pwd(void)
 
 	output = getcwd(NULL, 0);
 	if (!output)
-		return (error("getcwd"));
+		return (error("getcwd", ERR_BLT));
 	printf("%s\n", output);
 	free(output);
 	return (EXIT_SUCCESS);
@@ -35,7 +35,7 @@ int	cd(t_pipeline *pipe, t_env *e)
 		path = pipe->argv[1];
 	printf("path : %s\n", path);
 	if (chdir(path) == -1)
-		return (error("chdir"));
+		return (error("chdir", ERR_BLT));
 	return (EXIT_SUCCESS);
 }
 
@@ -75,7 +75,7 @@ int	export(t_env **e, t_pipeline *pipe, int i)
 		return (EXIT_SUCCESS);
 	splitter_arg = ft_split(pipe->argv[i], '=');
 	if (!splitter_arg)
-		return (error("malloc"));
+		return (error("malloc", ERR_MEM));
 	if (!splitter_arg[0])
 		return (EXIT_SUCCESS);
 	if (!splitter_arg[1])
@@ -85,7 +85,7 @@ int	export(t_env **e, t_pipeline *pipe, int i)
 	if (!new)
 	{
 		free_splitter(splitter_arg);
-		return (errno);
+		return (error("malloc", ERR_MEM));
 	}
 	env_add(e, new);
 	free_splitter(splitter_arg);

@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 11:14:05 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/01 15:39:21 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 16:46:49 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,12 @@
 # include <termios.h>
 # include "libft/libft.h"
 # include <errno.h>
+
+# define ERR_G 1
+# define ERR_BLT 2
+# define ERR_MEM 125
+# define ERR_EXEC 126
+# define ERR_NF 127
 
 typedef struct s_pipeline
 {
@@ -66,7 +72,7 @@ int		exec(t_list *cmd, t_env **e, char *envp[]);
 
 void	set_error(t_env **e, int value);
 void	free_pipeline(void *content);
-int		error(char *err);
+int		error(char *err, int exit_code);
 
 t_list	*parsing_init(char *cmd);
 char	*ft_strtok(char **ptr, char *delim);

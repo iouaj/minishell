@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 17:23:18 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/10 15:00:12 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 17:38:13 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ int	checkcmd(t_list *cmds, t_env **e)
 	}
 	else if (!ft_strncmp(pipe->argv[0], "cd", ft_strlen(pipe->argv[0])))
 		exit_value = cd(pipe, *e);
-	errno = exit_value;
 	return (exit_value);
 }
 
@@ -53,19 +52,19 @@ int	child_process(t_list *cmds, t_env **e, char *envp[], int pipefd[2])
 
 	pipe = (t_pipeline *) cmds->content;
 	if (close(pipefd[0]) == -1)
-		exit(error("close"));
+		exit(error("close", ERR_G));
 	fd = dup(pipe->fd_out);
 	if (fd == -1)
-		exit(error("dup"));
+		exit(error("dup", ERR_G));
 	if (dup2(pipefd[1], pipe->fd_out) == -1)
-		exit(error("dup2"));
+		exit(error("dup2", ERR_G));
 	exit_value = exec(cmds, e, envp);
 	if (dup2(fd, pipe->fd_out) == -1)
-		exit(error("dup2"));
+		exit(error("dup2", ERR_G));
 	if (close(pipefd[1]) == -1)
-		exit(error("close"));
+		exit(error("close", ERR_G));
 	if (close(fd) == -1)
-		exit(error("close"));
+		exit(error("close", ERR_G));
 	exit(exit_value);
 }
 
@@ -77,26 +76,30 @@ int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[])
 
 	pipe = (t_pipeline *) cmds->content;
 	if (close(pipefd[1]) == -1)
-		exit(error("close"));
+		return(error("close", ERR_G));
 	if (cmds != NULL && (*cmds).next != NULL)
 	{
 		fd = dup(pipe->fd_in);
 		if (!fd)
-			exit(error("dup"));
+			return(error("dup", ERR_G));
 		if (dup2(pipefd[0], pipe->fd_in) == -1)
-			exit(error("dup2"));
+			return(error("dup2", ERR_G));
 		run((*cmds).next, e, envp);
-		if (dup2(fd, pipe->fd_in) == -1);
-			exit(error("dup2"));
+		if (dup2(fd, pipe->fd_in) == -1)
+			return(error("dup2", ERR_G));
 		if (close(fd) == -1)
-			exit(error("close"));
+			return(error("close", ERR_G));
 	}
 	else
 		read_file(pipefd[0], pipe->fd_out);
 	if (close(pipefd[0]) == -1)
-		exit(error("close"));
+		return(error("close", ERR_G));
 	if (waitpid(-1, &wstatus, 0) == -1)
-		exit(erro("waitpid"));
+	{
+		if (errno == EINTR)
+			return (error("waitpid", 128 + WTERMSIG(wstatus)));
+		return (error("waitpid", ERR_G));
+	}
 	return (WEXITSTATUS(wstatus));
 }
 
@@ -104,16 +107,16 @@ int	run(t_list *cmds, t_env **e, char *envp[])
 {
 	pid_t		pid;
 	int			pipefd[2];
+	int			exit_code;
 
 	if (pipe(pipefd) == -1)
-	{
-		exit(error("pipe"));
-	}
-	if (checkcmd(cmds, e) != -1)
-		return (errno);
+		exit(error("pipe", ERR_G));
+	exit_code = checkcmd(cmds, e);
+	if (exit_code != -1)
+		return (exit_code);
 	pid = fork();
 	if (pid < 0)
-		return (error("fork"));
+		return (error("fork", ERR_G));
 	else if (pid == 0)
 		return (child_process(cmds, e, envp, pipefd));
 	else

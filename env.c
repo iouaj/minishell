@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:04:17 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/01 15:08:15 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 17:00:11 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,11 @@ t_env	*env_create_list(char *name, char *content)
 
 	env = malloc(sizeof(t_env));
 	if (!env)
-	{
-		error("malloc");
 		return (NULL);
-	}
 	env->name = ft_strdup(name);
 	if (!env->name)
 	{
 		free(env);
-		error("malloc");
 		return (NULL);
 	}
 	env->content = ft_strdup(content);
@@ -65,7 +61,6 @@ t_env	*env_create_list(char *name, char *content)
 	{
 		free(env->content);
 		free(env);
-		error("malloc");
 		return (NULL);
 	}
 	env->next = NULL;
@@ -86,7 +81,6 @@ t_env	*get_env_list(char *envp[])
 		if (!splitter_envp)
 		{
 			free_env(env);
-			error("malloc");
 			return (NULL);
 		}
 		env_add(&env, env_create_list(splitter_envp[0], splitter_envp[1]));

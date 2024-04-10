@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 15:23:58 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/10 14:32:35 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 17:37:13 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,40 @@
 void	child_execve(t_pipeline *pipe, char *envp[])
 {
 	char	*path;
+	int		exit_code;
 
-	if (!ft_strncmp(pipe->argv[0], "./", 2))
-	{
-		if (execve(pipe->argv[0], pipe->argv, envp) == -1)
-			error("execve");
-	}
-	else
+	exit_code = EXIT_SUCCESS;
+	if (ft_strncmp(pipe->argv[0], "./", 2))
 	{
 		path = ft_strjoin("/bin/", pipe->argv[0]);
 		if (execve(path, pipe->argv, envp) == -1)
-			error("execve");
+		{
+			if (errno == EMFILE || errno == ENFILE || errno == ENAMETOOLONG)
+				exit_code = error("execve", ERR_MEM);
+			else if (errno == ENOEXEC || errno == EACCES || errno == EFAULT)
+				exit_code = error("execve", ERR_EXEC);
+			else if (errno == ENOENT || errno == ENOTDIR)
+				exit_code = error("execve", ERR_NF);
+			else
+				exit_code = error("execve", 128);
+		}
 		free(path);
 	}
-	exit(errno);
+	else
+	{
+		if (execve(pipe->argv[0], pipe->argv, envp) == -1)
+		{
+			if (errno == EMFILE || errno == ENFILE || errno == ENAMETOOLONG)
+				exit_code = error("execve", ERR_MEM);
+			else if (errno == ENOEXEC || errno == EACCES || errno == EFAULT)
+				exit_code = error("execve", ERR_EXEC);
+			else if (errno == ENOENT || errno == ENOTDIR)
+				exit_code = error("execve", ERR_NF);
+			else
+				exit_code = error("execve", 128);
+		}
+	}
+	exit(exit_code);
 }
 
 int	exec_others(t_pipeline *pipe, char *envp[])
@@ -43,7 +63,16 @@ int	exec_others(t_pipeline *pipe, char *envp[])
 	else if (!pid)
 		child_execve(pipe, envp);
 	else
-		waitpid(pid, &wstatus, 0);
+	{
+		if (waitpid(pid, &wstatus, 0) == -1)
+		{
+			if (errno == EINTR)
+				return (error("waitpid", 128 + WTERMSIG(wstatus)));
+			return (error("waitpid", ERR_G));
+		}
+	}
+	if (WIFSIGNALED(wstatus))
+		return (128 + WTERMSIG(wstatus));
 	return (WEXITSTATUS(wstatus));
 }
 

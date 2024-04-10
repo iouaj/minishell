@@ -6,14 +6,14 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:21:30 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/10 14:34:08 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 18:11:06 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "minishell.h"
 
-int g_sig = 1;
+int g_sig = 0;
 
 t_list	*get_new_pipe(t_list **lst)
 {
@@ -161,11 +161,11 @@ int	settermios(struct termios old_term)
 
 void	handle_sigusr(int sig, siginfo_t *siginfo, void *context)
 {
-	(void) sig;
 	(void) context;
-	g_sig = 0;
+	g_sig = sig;
+	printf("SIG == %d (g:%d)\n", sig, g_sig);
 	if (close(siginfo->si_fd) == -1)
-		perror("close");
+		exit(error("close", ERR_G));
 }
 
 int	setsignal(void)
@@ -188,17 +188,17 @@ struct	termios	setup(t_env *e)
 	if (tcgetattr(0, &old_term) == -1)
 	{
 		free_env(e);
-		exit(error("tcgetattr"));
+		exit(error("tcgetattr", ERR_G));
 	}
 	if (settermios(old_term) == -1)
 	{
 		free_env(e);
-		exit(error("tcsetattr"));
+		exit(error("tcsetattr", ERR_G));
 	}
 	if (setsignal() == -1)
 	{
 		free_env(e);
-		exit(error("signal"));
+		exit(error("signal", ERR_G));
 	}
 	return (old_term);
 }
@@ -224,9 +224,9 @@ int	main(int argc, char *argv[], char *envp[])
 	exit_code = 0;
 	e = get_env_list(envp);
 	if (!e)
-		exit(error("malloc"));
+		exit(error("malloc", ERR_MEM));
 	old_term = setup(e);
-	while (g_sig)
+	while (g_sig != SIGINT)
 	{
 		free(str);
 		str = readline("\033[1;34mminishell$> \033[0m");
