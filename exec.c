@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 15:23:58 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/01 15:24:05 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:32:35 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ int	exec_others(t_pipeline *pipe, char *envp[])
 	int		wstatus;
 
 	pid = fork();
+	wstatus = 0;
 	if (pid == -1)
 		return (0);
 	else if (!pid)
@@ -60,7 +61,7 @@ int	exec(t_list *cmd, t_env **e, char *envp[])
 	else if (!ft_strncmp(pipe->argv[0], "echo", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = echo(pipe);
 	else if (!ft_strncmp(pipe->argv[0], "exit", ft_strlen(pipe->argv[0])))
-		pipe->exit_code = EXIT_FAILURE;
+		pipe->exit_code = 255;
 	else if (!ft_strncmp(pipe->argv[0], "env", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = env(*e);
 	else if (!ft_strncmp(pipe->argv[0], "export", ft_strlen(pipe->argv[0])))

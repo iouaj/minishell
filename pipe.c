@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 17:23:18 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/01 14:20:19 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 15:00:12 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@ int	checkcmd(t_list *cmds, t_env **e)
 			i++;
 		}
 	}
+	else if (!ft_strncmp(pipe->argv[0], "cd", ft_strlen(pipe->argv[0])))
+		exit_value = cd(pipe, *e);
+	errno = exit_value;
 	return (exit_value);
 }
 
@@ -49,13 +52,20 @@ int	child_process(t_list *cmds, t_env **e, char *envp[], int pipefd[2])
 	t_pipeline	*pipe;
 
 	pipe = (t_pipeline *) cmds->content;
-	close(pipefd[0]);
+	if (close(pipefd[0]) == -1)
+		exit(error("close"));
 	fd = dup(pipe->fd_out);
-	dup2(pipefd[1], pipe->fd_out);
+	if (fd == -1)
+		exit(error("dup"));
+	if (dup2(pipefd[1], pipe->fd_out) == -1)
+		exit(error("dup2"));
 	exit_value = exec(cmds, e, envp);
-	dup2(fd, pipe->fd_out);
-	close(pipefd[1]);
-	close(fd);
+	if (dup2(fd, pipe->fd_out) == -1)
+		exit(error("dup2"));
+	if (close(pipefd[1]) == -1)
+		exit(error("close"));
+	if (close(fd) == -1)
+		exit(error("close"));
 	exit(exit_value);
 }
 
@@ -66,19 +76,27 @@ int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[])
 	t_pipeline	*pipe;
 
 	pipe = (t_pipeline *) cmds->content;
-	close(pipefd[1]);
+	if (close(pipefd[1]) == -1)
+		exit(error("close"));
 	if (cmds != NULL && (*cmds).next != NULL)
 	{
 		fd = dup(pipe->fd_in);
-		dup2(pipefd[0], pipe->fd_in);
+		if (!fd)
+			exit(error("dup"));
+		if (dup2(pipefd[0], pipe->fd_in) == -1)
+			exit(error("dup2"));
 		run((*cmds).next, e, envp);
-		dup2(fd, pipe->fd_in);
-		close(fd);
+		if (dup2(fd, pipe->fd_in) == -1);
+			exit(error("dup2"));
+		if (close(fd) == -1)
+			exit(error("close"));
 	}
 	else
 		read_file(pipefd[0], pipe->fd_out);
-	close(pipefd[0]);
-	waitpid(-1, &wstatus, 0);
+	if (close(pipefd[0]) == -1)
+		exit(error("close"));
+	if (waitpid(-1, &wstatus, 0) == -1)
+		exit(erro("waitpid"));
 	return (WEXITSTATUS(wstatus));
 }
 
@@ -89,11 +107,10 @@ int	run(t_list *cmds, t_env **e, char *envp[])
 
 	if (pipe(pipefd) == -1)
 	{
-		perror("pipe");
-		exit(EXIT_FAILURE);
+		exit(error("pipe"));
 	}
 	if (checkcmd(cmds, e) != -1)
-		return (EXIT_SUCCESS);
+		return (errno);
 	pid = fork();
 	if (pid < 0)
 		return (error("fork"));

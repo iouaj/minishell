@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 17:35:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/01 14:08:03 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:38:06 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int	cd(t_pipeline *pipe, t_env *e)
 		path = get_env("HOME", e);
 	else
 		path = pipe->argv[1];
+	printf("path : %s\n", path);
 	if (chdir(path) == -1)
 		return (error("chdir"));
 	return (EXIT_SUCCESS);

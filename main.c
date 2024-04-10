@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:21:30 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/01 15:41:14 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:34:08 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ int	pipe_create(char *input, char *envp[], t_env **e)
 
 //Change termios
 //Ctrl D will now exit minishell, Ctrl C create a newline and Ctrl \ will do nothing.
-void	settermios(struct termios old_term)
+int	settermios(struct termios old_term)
 {
 	struct termios	new_term;
 
@@ -156,6 +156,7 @@ void	settermios(struct termios old_term)
 	new_term.c_cc[VEOF] = 3;
 	new_term.c_cc[VQUIT] = 0;
 	tcsetattr(0, TCSANOW, &new_term);
+	return (tcgetattr(0, &new_term));
 }
 
 void	handle_sigusr(int sig, siginfo_t *siginfo, void *context)
@@ -164,17 +165,50 @@ void	handle_sigusr(int sig, siginfo_t *siginfo, void *context)
 	(void) context;
 	g_sig = 0;
 	if (close(siginfo->si_fd) == -1)
-		printf("error\n");
+		perror("close");
 }
 
-void	setsignal(void)
+int	setsignal(void)
 {
 	struct sigaction	sa;
 
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = &handle_sigusr;
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGINT, &sa, NULL);
+	if (sigemptyset(&sa.sa_mask) == -1)
+		return (-1);
+	if (sigaction(SIGINT, &sa, NULL) == -1)
+		return (-1);
+	return (0);
+}
+
+struct	termios	setup(t_env *e)
+{
+	struct termios	old_term;
+
+	if (tcgetattr(0, &old_term) == -1)
+	{
+		free_env(e);
+		exit(error("tcgetattr"));
+	}
+	if (settermios(old_term) == -1)
+	{
+		free_env(e);
+		exit(error("tcsetattr"));
+	}
+	if (setsignal() == -1)
+	{
+		free_env(e);
+		exit(error("signal"));
+	}
+	return (old_term);
+}
+
+void	end_shell(char *str, t_env *e, struct termios old_term)
+{
+	clear_history();
+	free(str);
+	free_env(e);
+	tcsetattr(0, TCSANOW, &old_term);
 }
 
 int	main(int argc, char *argv[], char *envp[])
@@ -182,33 +216,29 @@ int	main(int argc, char *argv[], char *envp[])
 	char				*str;
 	struct termios		old_term;
 	t_env	*e;
+	int		exit_code;
 
 	(void) argc;
 	(void) argv;
 	str = NULL;
+	exit_code = 0;
 	e = get_env_list(envp);
 	if (!e)
-	{
-		perror("malloc");
-		return (1);
-	}
-	tcgetattr(0, &old_term);
-	settermios(old_term);
-	setsignal();
+		exit(error("malloc"));
+	old_term = setup(e);
 	while (g_sig)
 	{
-		if (str)
-			free(str);
+		free(str);
 		str = readline("\033[1;34mminishell$> \033[0m");
 		if (str && str[0])
 		{
 			add_history(str);
-			if (pipe_create(str, envp, &e) == EXIT_FAILURE)
+			exit_code = pipe_create(str, envp, &e);
+			if (exit_code == 255)
 				break ;
 		}
+		printf("%d\n", exit_code);
 	}
-	clear_history();
-	free(str);
-	free_env(e);
+	end_shell(str, e, old_term);
 	return (0);
 }
