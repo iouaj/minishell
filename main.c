@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:21:30 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/10 18:11:06 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/11 15:22:56 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ char	**lst_to_argv(t_list *lst)
 	return (argv);
 }
 
-int	pipe_create(char *input, char *envp[], t_env **e)
+int	pipe_create(char *input, char *envp[], t_env **e, t_sys *sys)
 {
 	t_pipeline	*pipln;
 	t_list		*pipeline;
@@ -138,7 +138,7 @@ int	pipe_create(char *input, char *envp[], t_env **e)
 		ft_lstadd_back(&pipeline, ft_lstnew(pipln));
 		free_lst(new);
 	}
-	value = run(pipeline, e, envp);
+	value = run(pipeline, e, envp, sys);
 	ft_lstclear(&lst, &free_quoted);
 	ft_lstclear(&backup, &free_quoted);
 	ft_lstclear(&pipeline, &free_pipeline);
@@ -163,7 +163,6 @@ void	handle_sigusr(int sig, siginfo_t *siginfo, void *context)
 {
 	(void) context;
 	g_sig = sig;
-	printf("SIG == %d (g:%d)\n", sig, g_sig);
 	if (close(siginfo->si_fd) == -1)
 		exit(error("close", ERR_G));
 }
@@ -213,32 +212,29 @@ void	end_shell(char *str, t_env *e, struct termios old_term)
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	char				*str;
-	struct termios		old_term;
-	t_env	*e;
+	t_sys	sys;
 	int		exit_code;
 
 	(void) argc;
 	(void) argv;
-	str = NULL;
+	sys.input = NULL;
 	exit_code = 0;
-	e = get_env_list(envp);
-	if (!e)
+	sys.e = get_env_list(envp);
+	if (!sys.e)
 		exit(error("malloc", ERR_MEM));
-	old_term = setup(e);
+	sys.old_term = setup(sys.e);
 	while (g_sig != SIGINT)
 	{
-		free(str);
-		str = readline("\033[1;34mminishell$> \033[0m");
-		if (str && str[0])
+		free(sys.input);
+		sys.input = readline("\033[1;34mminishell$> \033[0m");
+		if (sys.input && sys.input[0])
 		{
-			add_history(str);
-			exit_code = pipe_create(str, envp, &e);
-			if (exit_code == 255)
-				break ;
+			add_history(sys.input);
+			sys.pipe = 0;
+			exit_code = pipe_create(sys.input, envp, &sys.e, &sys);
 		}
 		printf("%d\n", exit_code);
 	}
-	end_shell(str, e, old_term);
+	end_shell(sys.input, sys.e, sys.old_term);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 15:23:58 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/10 17:37:13 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/11 15:24:08 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,11 @@ int	exec(t_list *cmd, t_env **e, char *envp[])
 		pipe->exit_code = cd(pipe, *e);
 	else if (!ft_strncmp(pipe->argv[0], "echo", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = echo(pipe);
-	else if (!ft_strncmp(pipe->argv[0], "exit", ft_strlen(pipe->argv[0])))
-		pipe->exit_code = 255;
+	// else if (!ft_strncmp(pipe->argv[0], "exit", ft_strlen(pipe->argv[0])))
+	// {
+
+	// 	pipe->exit_code = 0;
+	// }
 	else if (!ft_strncmp(pipe->argv[0], "env", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = env(*e);
 	else if (!ft_strncmp(pipe->argv[0], "export", ft_strlen(pipe->argv[0])))

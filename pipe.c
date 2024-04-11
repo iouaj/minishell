@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 17:23:18 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/10 17:38:13 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/11 15:27:39 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	read_file(int fd_to_read, int fd_to_write)
 		ft_putchar_fd(buf, fd_to_write);
 }
 
-int	checkcmd(t_list *cmds, t_env **e)
+int	checkcmd(t_list *cmds, t_env **e, t_sys *sys)
 {
 	t_pipeline	*pipe;
 	int			i;
@@ -41,6 +41,15 @@ int	checkcmd(t_list *cmds, t_env **e)
 	}
 	else if (!ft_strncmp(pipe->argv[0], "cd", ft_strlen(pipe->argv[0])))
 		exit_value = cd(pipe, *e);
+	else if (!ft_strncmp(pipe->argv[0], "exit", ft_strlen(pipe->argv[0])))
+	{
+		if (sys->pipe == 1)
+		{
+			end_shell(NULL, *e, sys->old_term);
+			exit(0);
+		}
+		exit_value = 0;
+	}
 	return (exit_value);
 }
 
@@ -68,7 +77,7 @@ int	child_process(t_list *cmds, t_env **e, char *envp[], int pipefd[2])
 	exit(exit_value);
 }
 
-int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[])
+int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[], t_sys *sys)
 {
 	int	fd;
 	int	wstatus;
@@ -84,7 +93,7 @@ int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[])
 			return(error("dup", ERR_G));
 		if (dup2(pipefd[0], pipe->fd_in) == -1)
 			return(error("dup2", ERR_G));
-		run((*cmds).next, e, envp);
+		run((*cmds).next, e, envp, sys);
 		if (dup2(fd, pipe->fd_in) == -1)
 			return(error("dup2", ERR_G));
 		if (close(fd) == -1)
@@ -103,15 +112,16 @@ int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[])
 	return (WEXITSTATUS(wstatus));
 }
 
-int	run(t_list *cmds, t_env **e, char *envp[])
+int	run(t_list *cmds, t_env **e, char *envp[], t_sys *sys)
 {
 	pid_t		pid;
 	int			pipefd[2];
 	int			exit_code;
 
+	sys->pipe++;
 	if (pipe(pipefd) == -1)
 		exit(error("pipe", ERR_G));
-	exit_code = checkcmd(cmds, e);
+	exit_code = checkcmd(cmds, e, sys);
 	if (exit_code != -1)
 		return (exit_code);
 	pid = fork();
@@ -120,5 +130,5 @@ int	run(t_list *cmds, t_env **e, char *envp[])
 	else if (pid == 0)
 		return (child_process(cmds, e, envp, pipefd));
 	else
-		return (parent_process(cmds, e, envp, pipefd));
+		return (parent_process(cmds, e, envp, pipefd, sys));
 }

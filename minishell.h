@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 11:14:05 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/10 16:46:49 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/11 15:21:05 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,14 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+typedef struct s_sys
+{
+	t_env				*e;
+	struct termios		old_term;
+	char				*input;
+	int					pipe;
+}	t_sys;
+
 //env
 void	env_add(t_env **lst, t_env *new);
 t_env	*env_create_list(char *name, char *content);
@@ -79,5 +87,7 @@ char	*ft_strtok(char **ptr, char *delim);
 void	*ft_env(void *content);
 void	free_quoted(void *ptr);
 
-int		run(t_list *cmds, t_env **e, char **envp);
+int	run(t_list *cmds, t_env **e, char *envp[], t_sys *sys);
+
+void	end_shell(char *str, t_env *e, struct termios old_term);
 #endif
