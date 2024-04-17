@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 17:23:18 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/17 14:18:23 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/17 15:41:54 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,23 +59,23 @@ int	child_process(t_pipeline *pip, t_env **e, char *envp[], int pipefd[2])
 	int	exit_code;
 
 	if (close(pipefd[0]) == -1)
-		return(error("close", ERR_G));
+		return (error("close", ERR_G));
 	fd = dup(1);
 	if (!fd)
-		return(error("dup", ERR_G));
+		return (error("dup", ERR_G));
 	if ((*pip).fd_out != 1)
 	{
 		if (dup2((*pip).fd_out, 1) == -1)
-			return(error("dup2", ERR_G));
+			return (error("dup2", ERR_G));
 	}
 	else
 	{
-		if (dup2(pipefd[1], 1) == - 1)
-			return(error("dup2", ERR_G));
+		if (dup2(pipefd[1], 1) == -1)
+			return (error("dup2", ERR_G));
 	}
 	exit_code = exec(pip, e, envp);
 	if (dup2(fd, 1) == -1)
-		return(error("dup2", ERR_G));
+		return (error("dup2", ERR_G));
 	if (close(pipefd[1]) == -1 || close(fd) == -1)
 		return (error("close", ERR_G));
 	if ((*pip).fd_out != 1)
@@ -98,23 +98,23 @@ int	next_pipe(t_list *cmds, t_env **e, char *envp[], int pipefd[], t_sys *sys)
 
 	fd = dup(0);
 	if (!fd)
-		return(error("dup", ERR_G));
+		return (error("dup", ERR_G));
 	pipe = (t_pipeline *)(*(*cmds).next).content;
 	if (pipe->fd_in != 0)
 	{
 		if (dup2(pipe->fd_in, 0) == -1)
-			return(error("dup2", ERR_G));
+			return (error("dup2", ERR_G));
 	}
 	else
 	{
 		if (dup2(pipefd[0], 0) == -1)
-			return(error("dup2", ERR_G));
+			return (error("dup2", ERR_G));
 	}
 	run((*cmds).next, e, envp, sys);
 	if (dup2(fd, 0) == -1)
-		return(error("dup2", ERR_G));
+		return (error("dup2", ERR_G));
 	if (close(fd) == -1)
-		return(error("close", ERR_G));
+		return (error("close", ERR_G));
 	return (0);
 }
 
@@ -135,7 +135,7 @@ int	parent_process(t_list *cmds, t_env **e, char *envp[], int pipefd[], t_sys *s
 	else
 		read_file(pipefd[0], pipe->fd_out);
 	if (close(pipefd[0]) == -1)
-		return(error("close", ERR_G));
+		return (error("close", ERR_G));
 	if (waitpid(-1, &wstatus, 0) == -1)
 	{
 		if (errno == EINTR)
@@ -182,9 +182,9 @@ void	open_fd(t_pipeline *pip)
 
 int	run(t_list *cmds, t_env **e, char *envp[], t_sys *sys)
 {
-	pid_t	pid;
-	int		pipefd[2];
-	int		exit_code;
+	pid_t		pid;
+	int			pipefd[2];
+	int			exit_code;
 	t_pipeline	*pip;
 
 	sys->pipe++;

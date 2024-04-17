@@ -6,11 +6,23 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 15:23:58 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/17 13:35:23 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/17 15:44:33 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	get_execve_error(void)
+{
+	if (errno == EMFILE || errno == ENFILE || errno == ENAMETOOLONG)
+		return (error("execve", ERR_MEM));
+	else if (errno == ENOEXEC || errno == EACCES || errno == EFAULT)
+		return (error("execve", ERR_EXEC));
+	else if (errno == ENOENT || errno == ENOTDIR)
+		return (error("execve", ERR_NF));
+	else
+		return (error("execve", 128));
+}
 
 void	child_execve(t_pipeline *pipe, char *envp[])
 {
@@ -22,31 +34,13 @@ void	child_execve(t_pipeline *pipe, char *envp[])
 	{
 		path = ft_strjoin("/bin/", pipe->argv[0]);
 		if (execve(path, pipe->argv, envp) == -1)
-		{
-			if (errno == EMFILE || errno == ENFILE || errno == ENAMETOOLONG)
-				exit_code = error("execve", ERR_MEM);
-			else if (errno == ENOEXEC || errno == EACCES || errno == EFAULT)
-				exit_code = error("execve", ERR_EXEC);
-			else if (errno == ENOENT || errno == ENOTDIR)
-				exit_code = error("execve", ERR_NF);
-			else
-				exit_code = error("execve", 128);
-		}
+			exit_code = get_execve_error();
 		free(path);
 	}
 	else
 	{
 		if (execve(pipe->argv[0], pipe->argv, envp) == -1)
-		{
-			if (errno == EMFILE || errno == ENFILE || errno == ENAMETOOLONG)
-				exit_code = error("execve", ERR_MEM);
-			else if (errno == ENOEXEC || errno == EACCES || errno == EFAULT)
-				exit_code = error("execve", ERR_EXEC);
-			else if (errno == ENOENT || errno == ENOTDIR)
-				exit_code = error("execve", ERR_NF);
-			else
-				exit_code = error("execve", 128);
-		}
+			exit_code = get_execve_error();
 	}
 	exit(exit_code);
 }
@@ -78,22 +72,12 @@ int	exec_others(t_pipeline *pipe, char *envp[])
 
 int	exec(t_pipeline *pipe, t_env **e, char *envp[])
 {
-	// t_pipeline	*pipe;
-
-	// pipe = NULL;
-	// if (cmd)
-	// 	pipe = (t_pipeline *)(*cmd).content;
 	if (!ft_strncmp(pipe->argv[0], "pwd", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = pwd();
 	else if (!ft_strncmp(pipe->argv[0], "cd", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = cd(pipe, *e);
 	else if (!ft_strncmp(pipe->argv[0], "echo", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = echo(pipe);
-	// else if (!ft_strncmp(pipe->argv[0], "exit", ft_strlen(pipe->argv[0])))
-	// {
-
-	// 	pipe->exit_code = 0;
-	// }
 	else if (!ft_strncmp(pipe->argv[0], "env", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = env(*e);
 	else if (!ft_strncmp(pipe->argv[0], "export", ft_strlen(pipe->argv[0])))

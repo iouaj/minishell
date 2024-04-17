@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 05:05:38 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/17 13:05:02 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/17 15:45:22 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ char	*ft_skip_whitespace(t_list *lst)
 
 char	*get_io_file(t_list *lst, int io, int *a_mode, char **eof)
 {
-	t_token	*token;
-	t_list	*cursor;
+	t_token		*token;
+	t_list		*cursor;
 	char		*tmp;
 
 	cursor = lst;
