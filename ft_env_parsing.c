@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 18:03:31 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/01 15:12:56 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/17 13:04:59 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,10 @@ void	*ft_env(void *content)
 	token = malloc(sizeof(t_token));
 	if (token == NULL)
 		return (NULL);
-	(*token).str = ft_replace_env((*(t_token *)content).str);
+	if ((*(t_token *)content).quoted == 1)
+		(*token).str = ft_strdup((*(t_token *)content).str);
+	else
+		(*token).str = ft_replace_env((*(t_token *)content).str);
 	(*token).quoted = (*(t_token *)content).quoted;
 	return (token);
 }

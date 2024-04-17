@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 11:14:05 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/11 15:21:05 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/17 14:31:51 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <termios.h>
 # include "libft/libft.h"
 # include <errno.h>
+# include <fcntl.h>
 
 # define ERR_G 1
 # define ERR_BLT 2
@@ -34,8 +35,11 @@ typedef struct s_pipeline
 {
 	char	**argv;
 	char	*eof;
+	char	*file_out;
+	char	*file_in;
 	int		fd_in;
 	int		fd_out;
+	int		a_mode;
 	int		exit_code;
 }	t_pipeline;
 
@@ -76,7 +80,7 @@ int		env(t_env *e);
 int		export(t_env **e, t_pipeline *pipe, int i);
 
 void	free_splitter(char **splitter);
-int		exec(t_list *cmd, t_env **e, char *envp[]);
+int		exec(t_pipeline *pipe, t_env **e, char *envp[]);
 
 void	set_error(t_env **e, int value);
 void	free_pipeline(void *content);
@@ -87,7 +91,13 @@ char	*ft_strtok(char **ptr, char *delim);
 void	*ft_env(void *content);
 void	free_quoted(void *ptr);
 
-int	run(t_list *cmds, t_env **e, char *envp[], t_sys *sys);
+int		run(t_list *cmds, t_env **e, char *envp[], t_sys *sys);
 
 void	end_shell(char *str, t_env *e, struct termios old_term);
+
+void	read_file(int fd_to_read, int fd_to_write);
+t_list	*ft_pipeline_init(t_list *parsed);
+t_list	*get_next_pipe(t_list **lst);
+char	*get_io_file(t_list *lst, int io, int *a_mode, char **eof);
+char	**lst_to_argv(t_list *lst);
 #endif

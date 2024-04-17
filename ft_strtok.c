@@ -6,11 +6,11 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 10:59:19 by souaguen          #+#    #+#             */
-/*   Updated: 2024/04/01 15:12:50 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/17 14:32:13 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft/libft.h"
 
 char	*extract_qtoken(char **ptr, char *str, int len)
 {

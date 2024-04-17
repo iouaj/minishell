@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 15:23:58 by iouajjou          #+#    #+#             */
-/*   Updated: 2024/04/11 15:24:08 by iouajjou         ###   ########.fr       */
+/*   Updated: 2024/04/17 13:35:23 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,13 +76,13 @@ int	exec_others(t_pipeline *pipe, char *envp[])
 	return (WEXITSTATUS(wstatus));
 }
 
-int	exec(t_list *cmd, t_env **e, char *envp[])
+int	exec(t_pipeline *pipe, t_env **e, char *envp[])
 {
-	t_pipeline	*pipe;
+	// t_pipeline	*pipe;
 
-	pipe = NULL;
-	if (cmd)
-		pipe = (t_pipeline *)(*cmd).content;
+	// pipe = NULL;
+	// if (cmd)
+	// 	pipe = (t_pipeline *)(*cmd).content;
 	if (!ft_strncmp(pipe->argv[0], "pwd", ft_strlen(pipe->argv[0])))
 		pipe->exit_code = pwd();
 	else if (!ft_strncmp(pipe->argv[0], "cd", ft_strlen(pipe->argv[0])))

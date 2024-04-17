@@ -6,7 +6,7 @@
 #    By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/08 21:52:24 by  souaguen         #+#    #+#              #
-#    Updated: 2024/04/01 15:39:58 by iouajjou         ###   ########.fr        #
+#    Updated: 2024/04/17 13:05:52 by iouajjou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,14 +18,17 @@ CFLAGS = -Wall -Wextra -Werror
 INCLUDES = minishell.h
 
 FILES =	main \
-		ft_strtok \
-		ft_parsing \
-		ft_env_parsing \
 		exec \
 		env \
 		builtins \
 		pipe \
 		utils \
+		ft_env_parsing \
+		ft_file_utils \
+		ft_parsing \
+		ft_pipeline \
+		ft_str_to_exec \
+		ft_strtok
 
 SRC = $(addsuffix .c, $(FILES))
 
