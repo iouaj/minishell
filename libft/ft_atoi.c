@@ -3,59 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:34:23 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:34:23 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/02 22:36:18 by souaguen          #+#    #+#             */
+/*   Updated: 2023/11/17 15:21:24 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	is_wspace(char c)
-{
-	if ((c >= 9 && c <= 13) || c == 32)
-		return (1);
-	return (0);
-}
-
-static int	is_nbr(char c)
-{
-	if (c >= '0' && c <= '9')
-	{
-		return (1);
-	}
-	return (0);
-}
-
-int	ft_atoi(const char *nptr)
+int	ft_atoi(const char *str)
 {
 	int	i;
-	int	nbr;
-	int	sign;
+	int	res;
+	int	neg;
 
+	res = 0;
+	neg = 1;
 	i = 0;
-	nbr = 0;
-	sign = 1;
-	while (is_wspace(nptr[i]))
+	while ((*(str + i) >= 9 && *(str + i) <= 13) || *(str + i) == ' ')
 		i++;
-	if (nptr[i] == '-' || nptr[i] == '+')
+	if (*(str + i) == '-' || *(str + i) == '+')
 	{
-		if (nptr[i] == '-')
-			sign = -1;
+		if (*(str + i) == '-')
+			neg *= -1;
 		i++;
 	}
-	while (is_nbr(nptr[i]))
+	while (*(str + i) != '\0')
 	{
-		nbr = nbr * 10 + nptr[i] - 48;
+		if (!(*(str + i) >= '0' && *(str + i) <= '9'))
+			break ;
+		res = (res * 10) + (*(str + i) - '0');
 		i++;
 	}
-	return (nbr * sign);
+	return (res * neg);
 }
-
-// #include <stdio.h>
-
-// int main()
-// {
-//     printf("%d", ft_atoi("       +4555 455"));
-// }

@@ -3,73 +3,84 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:28:21 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:28:21 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/04 04:12:39 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/16 21:55:33 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "libft.h"
 
-static int	is_inset(char const *set, char c)
+static int	is_in_set(char const *set, char c)
 {
 	int	i;
 
+	if (set == NULL)
+		return (0);
 	i = 0;
-	while (set[i])
+	while (*(set + i) != '\0')
 	{
-		if (c == set[i])
+		if (*(set + i) == c)
 			return (1);
 		i++;
 	}
 	return (0);
 }
 
-static char	*cpy(char const *src, char *dest, int len)
+static int	count_chars(char const *s, char const *set)
 {
-	int	i;
+	char	b;
+	int		i;
+	int		c;
 
 	i = 0;
-	while (i < len)
+	c = 0;
+	b = 0;
+	while (*(s + i) != '\0')
 	{
-		dest[i] = src[i];
+		if (is_in_set(set, *(s + i)) && !b)
+			c++;
+		else if (!b)
+			b = 1;
 		i++;
 	}
-	dest[i] = 0;
-	return (dest);
+	if (c == i)
+		return (c);
+	while ((i--) > 0)
+	{
+		if (is_in_set(set, *(s + i)))
+			c++;
+		else
+			break ;
+	}
+	return (c);
 }
 
 char	*ft_strtrim(char const *s1, char const *set)
 {
-	int		i;
-	int		len;
-	char	*trim;
+	char	*str;
+	size_t	n;
+	size_t	i;
+	size_t	j;
 
-	if (!s1)
+	if (s1 == NULL)
+		return (NULL);
+	n = count_chars(s1, set);
+	str = malloc((ft_strlen(s1) - n) * sizeof(char) + 1);
+	if (str == NULL)
 		return (NULL);
 	i = 0;
-	len = ft_strlen(s1);
-	while (is_inset(set, s1[i]) && s1[i])
+	while (is_in_set(set, *(s1 + i)))
 		i++;
-	while (is_inset(set, s1[len - 1]) && !(len < i))
-		len--;
-	if (i >= (int)ft_strlen(s1) || !len || len < i)
+	n = n - i;
+	j = 0;
+	while (*(s1 + (i + n)) != '\0')
 	{
-		trim = malloc(sizeof(char) * 1);
-		trim[0] = 0;
-		return (trim);
+		*(str + j) = *(s1 + i);
+		i++;
+		j++;
 	}
-	trim = malloc(sizeof(char) * (len - i + 1));
-	if (!trim)
-		return (NULL);
-	cpy(s1 + i, trim, len - i);
-	return (trim);
+	*(str + j) = '\0';
+	return (str);
 }
-
-/*#include <stdio.h>
-
-int main()
-{
- 	char str[] = "*******,,,,///Ceci est un / test**************,,,,";
- 	printf("%s", ft_strtrim(str, "*,/"));
-}*/

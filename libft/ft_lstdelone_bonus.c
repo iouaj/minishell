@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstdelone_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 17:08:05 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 17:08:05 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/12 00:29:34 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/15 23:36:56 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
-	del(lst->content);
+	if (lst == NULL || del == NULL)
+		return ;
+	(del)((*lst).content);
 	free(lst);
+	lst = NULL;
 }

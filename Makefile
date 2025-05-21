@@ -5,65 +5,68 @@
 #                                                     +:+ +:+         +:+      #
 #    By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/03/08 21:52:24 by  souaguen         #+#    #+#              #
-#    Updated: 2024/04/17 13:05:52 by iouajjou         ###   ########.fr        #
+#    Created: 2024/05/07 02:16:23 by souaguen          #+#    #+#              #
+#    Updated: 2024/07/25 16:46:12 by iouajjou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = minishell
+CC=cc
+CFLAGS=-g -Wall -Werror -Wextra -I./get_next_line -I./libft -I./includes
+NAME=minishell
+EXECSRC=src/exec/builtins.c \
+	 src/exec/child.c \
+	 src/exec/env.c \
+	 src/exec/exec.c \
+	 src/exec/parent.c \
+	 src/exec/pipe.c \
+	 src/exec/system.c \
+	 src/exec/utils.c \
+	 src/exec/utils_plus.c \
+	 src/exec/signal.c \
+	 src/exec/unset.c \
+	 src/exec/exec_utils.c \
+	 main.c
+PARSINGSRC=src/parsing/ft_env_parsing.c \
+	    src/parsing/ft_file_utils.c \
+	    src/parsing/ft_parsing.c \
+	    src/parsing/ft_pipeline.c \
+	    src/parsing/ft_strtok.c \
+	    src/parsing/ft_str_to_exec.c \
+	    src/parsing/ft_parsing_utils.c \
+	    src/parsing/ft_file_tools.c \
+	    src/parsing/ft_syntax_check.c \
+	    src/parsing/ft_cleaning_utils.c \
+	    src/parsing/ft_exitcode.c
+WILDCARDSRC=src/wildcard/ft_wildcard.c \
+	    src/wildcard/ft_wildcard_utils.c \
+	    src/wildcard/ft_wildcard_tools.c \
+	    src/wildcard/ft_dir_loop.c
+LIBTREEDIR=src/libtree
+LIBTREESRC=$(LIBTREEDIR)/ft_tree.c \
+	   $(LIBTREEDIR)/ft_tree_utils.c \
+	   $(LIBTREEDIR)/ft_exec_tree.c
+GNLSRC=src/get_next_line/get_next_line.c \
+       src/get_next_line/get_next_line_utils.c
+EXECOBJ=$(EXECSRC:.c=.o)
+PARSINGOBJ=$(PARSINGSRC:.c=.o)
+LIBTREEOBJ=$(LIBTREESRC:.c=.o)
+WILDCARDOBJ=$(WILDCARDSRC:.c=.o)
+GNLOBJ=$(GNLSRC:.c=.o)
 
-CC = cc
-CFLAGS = -Wall -Wextra -Werror
+$(NAME): $(EXECOBJ) $(PARSINGOBJ) $(LIBTREEOBJ) $(GNLOBJ) $(WILDCARDOBJ)
+	make -C libft all bonus
+	$(CC) $(EXECOBJ) $(PARSINGOBJ) $(LIBTREEOBJ) $(GNLOBJ) $(WILDCARDOBJ) -o $(NAME) -L./libft -l:libft.a -lreadline
 
-INCLUDES = minishell.h
-
-FILES =	main \
-		exec \
-		env \
-		builtins \
-		pipe \
-		utils \
-		ft_env_parsing \
-		ft_file_utils \
-		ft_parsing \
-		ft_pipeline \
-		ft_str_to_exec \
-		ft_strtok
-
-SRC = $(addsuffix .c, $(FILES))
-
-OBJ = $(SRC:.c=.o)
-
-LIBFT = libft
-
-RED =\033[1;31m
-GREEN =\033[1;32m
-CYAN =\033[1;36m
-COLOR_OFF =\033[0m
-
-BIGREEN=\033[1;92m
-
-%.o : %.c
-	@$(CC) $(CFLAGS) -c $^
-
-all : $(NAME)
-
-$(NAME) : $(OBJ) $(INCLUDES) $(LIBFT)
-	@make bonus -C $(LIBFT) --no-print-directory
-	@echo "$(GREEN)Libft create.$(COLOR_OFF)"
-	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT)/libft.a -lreadline -I $(INCLUDES) -o $(NAME)
-	@echo "$(BIGREEN)Minishell create.$(COLOR_OFF)"
+all: $(NAME)
 
 clean:
-	@make fclean -C $(LIBFT) --no-print-directory
-	@rm -f $(OBJ)
-	@echo "$(CYAN)Minishell cleaned.$(COLOR_OFF)"
+	make -C libft clean
+	rm -f $(EXECOBJ) $(PARSINGOBJ) $(LIBTREEOBJ) $(GNLOBJ) $(WILDCARDOBJ)
 
 fclean: clean
-	@rm -f $(NAME)
-	@echo "$(RED)Minishell destroy.$(COLOR_OFF)"
+	make -C libft fclean
+	rm -f $(NAME)
 
-re: fclean
-	@make all --no-print-directory
+re: fclean all
 
 .PHONY: all clean fclean re

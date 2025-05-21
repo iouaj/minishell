@@ -3,152 +3,100 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:03:47 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:03:47 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/04 04:44:03 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/16 21:24:44 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	count_words(char const *s, char c)
+static int	next_sep(char *s, char c)
 {
 	int	i;
-	int	pass;
-	int	nb;
 
-	i = 0;
-	pass = 1;
-	nb = 0;
-	while (s[i])
+	i = 1;
+	while (*(s + i) != '\0')
 	{
-		if (s[i] != c && pass == 1)
-		{
-			nb++;
-			pass = 0;
-		}
-		if (s[i] == c)
-			pass = 1;
+		if (*(s + i) == c)
+			return (i);
 		i++;
 	}
-	return (nb);
-}
-
-static int	next_string(char const *s, char c)
-{
-	int	i;
-
-	i = 0;
-	while (s[i] != c && s[i])
-		i++;
 	return (i);
 }
 
-// static char	*dupli(const char *s, char *dup, char c, int len)
-// {
-// 	int	i;
-
-// 	dup = malloc(sizeof(char) * len + 1);
-// 	if (!dup)
-// 		return (NULL);
-// 	i = 0;
-// 	while (s[i] && s[i] != c)
-// 	{
-// 		dup[i] = s[i];
-// 		i++;
-// 	}
-// 	dup[i] = 0;
-// 	return (dup);
-// }
-
-static void	cleanleaks(char **splitter)
+static char	*skip_first_chars(char *s, char c)
 {
 	int	i;
 
 	i = 0;
-	while (splitter[i])
-	{
-		free(splitter[i]);
+	if (s == NULL)
+		return (NULL);
+	while (*(s + i) == c && *(s + i) != '\0')
 		i++;
-	}
-	free(splitter);
+	return (s + i);
 }
 
-static char	**cpy(char **splitter, char const *s, char c, int index)
+static int	count_words(char *s, char c)
 {
 	int	i;
-	int	len;
+	int	count;
+	int	b;
 
-	len = next_string(s, c);
-	splitter[index] = malloc(sizeof(char) * len + 1);
-	if (!splitter[index])
-	{
-		cleanleaks(splitter);
-		return (NULL);
-	}
 	i = 0;
-	while (s[i] && s[i] != c)
+	b = 0;
+	count = 0;
+	if (s == NULL || *(s) == '\0')
+		return (0);
+	while (*(s + i + 1) != '\0')
 	{
-		splitter[index][i] = s[i];
+		if (*(s + i) == c && *(s + i + 1) != c && b)
+			count++;
+		if (!b && *(s + i) != c)
+			b = 1;
 		i++;
 	}
-	splitter[index][i] = 0;
-	return (splitter);
+	return (count + 1);
+}
+
+static void	free_tab(char **tab, size_t size)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < size)
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	char	**splitter;
+	char	**tab;
+	int		count;
 	int		i;
-	int		len;
+	int		b;
 
-	splitter = malloc(sizeof(char *) * (count_words(s, c) + 1));
-	if (!splitter)
+	s = skip_first_chars((char *)s, c);
+	count = count_words((char *)s, c);
+	tab = malloc(sizeof(char *) * (count + 1));
+	if (tab == NULL)
 		return (NULL);
 	i = 0;
-	while (s[0])
+	while (*(s) != '\0')
 	{
-		if (s[0] != c)
+		b = next_sep((char *)s, c);
+		tab[i] = ft_substr((char *)s, 0, b);
+		if (tab[(i++)] == NULL)
 		{
-			len = next_string(s, c);
-			splitter = cpy(splitter, s, c, i);
-			if (!splitter)
-				return (NULL);
-			i++;
-			s += len;
+			free_tab(tab, i);
+			return (NULL);
 		}
-		else
-			s++;
+		s = skip_first_chars((char *)(s + b), c);
 	}
-	splitter[i] = NULL;
-	return (splitter);
+	tab[i] = NULL;
+	return (tab);
 }
-
-/*#include <stdio.h>
-int main()
-{
-	char str[] = "test";
-	char **splitter = ft_split(str, 0);
-
-	int i = 0;
-	if (!splitter)
-	{
-		printf("NULL");
-		return (0);
-	}
-	while(splitter[i])
-	{
-		printf("%s\n", splitter[i]);
-		i++;
-	}
-	printf("%s", splitter[i]);
-	i = 0;
-	while(splitter[i])
-	{
-		free(splitter[i]);
-		i++;
-	}
-	free(splitter[i]);
-	free(splitter);
-}*/

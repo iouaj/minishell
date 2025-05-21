@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:33:06 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:33:06 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/04 01:44:32 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/20 10:34:26 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,40 +14,21 @@
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {
-	void	*array;
+	void	*buf;
 
-	if (nmemb)
+	buf = NULL;
+	if (size == 0)
 	{
-		if (!(nmemb * size / nmemb == size))
+		buf = malloc(0);
+		if (buf == NULL)
 			return (NULL);
+		return (buf);
 	}
-	array = malloc(size * nmemb);
-	if (!array)
+	else if ((nmemb * size) / size != nmemb)
 		return (NULL);
-	ft_bzero(array, nmemb * size);
-	return (array);
+	buf = malloc(nmemb * size);
+	if (buf == NULL)
+		return (NULL);
+	ft_bzero(buf, size * nmemb);
+	return (buf);
 }
-
-/*void *ft_calloc(size_t count, size_t size)
-{
-    void *res;
-
-    if (size > sizeof(char) * 2147483424 || count > sizeof(char) * 2147483424)
-        return (NULL);
-    res = malloc(size * count);
-    if (!res)
-        return (0);
-    ft_bzero(res, size * count);
-    return (res);
-}*/
-
-/*#include <stdio.h>
-int main()
-{
-    ft_calloc(-5, -5);
-    if (malloc(0 * -5) == NULL)
-        printf("NULL NAZE");
-    else
-        printf("c'est pas null");
-    //printf("%u", test(ft_calloc, SIZE_MAX, SIZE_MAX));
-}*/

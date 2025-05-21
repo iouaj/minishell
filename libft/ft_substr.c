@@ -3,50 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:30:13 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:30:13 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/04 02:27:49 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/13 02:15:16 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+static int	get_min(size_t a, size_t b)
 {
-	char	*substr;
-	size_t	i;
-	size_t	len_s;
-
-	if (start > ft_strlen(s))
-	{
-		substr = malloc(sizeof(char) * 1);
-		substr[0] = 0;
-		return (substr);
-	}
-	len_s = ft_strlen(s + start);
-	if (len_s < len)
-		len = len_s;
-	substr = malloc(sizeof(char) * (len + 1));
-	if (!substr)
-		return (substr);
-	i = 0;
-	while (s[start + i] && i < len)
-	{
-		substr[i] = s[start + i];
-		i++;
-	}
-	substr[i] = 0;
-	return (substr);
+	if (a > b)
+		return (b);
+	return (a);
 }
 
-// #include <stdio.h>
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*str;
+	size_t	i;
+	size_t	s_len;
 
-// int main()
-// {
-// 	char *str = "";
-// 	char *sub = ft_substr(str, 6, 10);
-
-// 	printf("%s", sub);
-// 	free(sub);
-// }
+	i = 0;
+	s_len = ft_strlen(s);
+	if (start > s_len || len == 0)
+	{
+		str = malloc(1);
+		if (str == NULL)
+			return (NULL);
+		*(str) = '\0';
+		return (str);
+	}
+	s_len = get_min(ft_strlen((s + start)), len);
+	str = malloc(s_len * sizeof(char) + 1);
+	if (str == NULL)
+		return (NULL);
+	while (i < len && *(s + (start + i)) != '\0')
+	{
+		*(str + i) = *(s + (start + i));
+		i++;
+	}
+	*(str + i) = '\0';
+	return (str);
+}

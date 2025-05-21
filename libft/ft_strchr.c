@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:05:52 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:05:52 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/02 05:51:54 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/17 15:17:21 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,13 @@ char	*ft_strchr(const char *s, int c)
 	int	i;
 
 	i = 0;
-	while (c > 255)
-		c -= 256;
-	while (s[i] != c && s[i])
+	while (*(s + i) != '\0')
+	{
+		if ((int) *(s + i) == (char unsigned) c)
+			return ((char *)(s + i));
 		i++;
-	if (!s[i] && c)
-		return (NULL);
-	return ((char *) s + i);
+	}
+	if (*(s + i) == (unsigned char) c)
+		return ((char *)(s + i));
+	return (NULL);
 }
-
-// #include <stdio.h>
-
-// int main()
-// {
-//     char str[] = "Coucou";
-
-//     printf("%s", ft_strchr(str, 'u'));
-// }

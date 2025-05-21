@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:07:34 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:07:34 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/04 02:15:16 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/17 14:28:34 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,17 @@
 
 char	*ft_strdup(const char *s)
 {
+	char	*str;
+	int		len;
 	int		i;
-	char	*dup;
 
-	i = 0;
-	while (s[i])
-		i++;
-	dup = malloc(sizeof(char) * i + 1);
-	if (!dup)
+	len = ft_strlen(s);
+	str = malloc(sizeof(char) * len + 1);
+	if (str == NULL)
 		return (NULL);
-	i = 0;
-	while (s[i])
-	{
-		dup[i] = s[i];
-		i++;
-	}
-	dup[i] = 0;
-	return (dup);
+	i = -1;
+	while ((++i) < len)
+		*(str + i) = *(char *)(s + i);
+	*(str + i) = '\0';
+	return (str);
 }
-
-// #include <stdio.h>
-
-// int main()
-// {
-//     char *str = "Coucou ca va ?";
-
-//     printf("%s", ft_strdup(str));
-// }

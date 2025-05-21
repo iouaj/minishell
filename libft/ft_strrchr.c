@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strrchr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:27:34 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:27:34 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/02 06:02:12 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/17 15:17:54 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,18 @@
 
 char	*ft_strrchr(const char *s, int c)
 {
-	int	i;
+	char	*tmp;
+	int		i;
 
-	if (!s)
-		return (NULL);
-	i = ft_strlen(s);
-	if (!i && c)
-		return (NULL);
-	while (i >= 0)
+	i = 0;
+	tmp = NULL;
+	while (*(s + i) != '\0')
 	{
-		if (s[i] == (char) c)
-			return ((char *)(s + i));
-		i--;
+		if (*(s + i) == (unsigned char) c)
+			tmp = (char *)(s + i);
+		i++;
 	}
-	return (NULL);
+	if (*(s + i) == (unsigned char) c)
+		return ((char *)(s + i));
+	return (tmp);
 }
-
-/*#include <stdio.h>
-#include <string.h>
-
-int main()
-{
-    char str[] = "bonjour";
-
-    printf("%p\n", strrchr(str, 's'));
-    printf("%p\n", ft_strrchr(str, 's'));
-}*/

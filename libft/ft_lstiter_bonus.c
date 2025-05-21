@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstiter_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 17:08:12 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 17:08:12 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/12 00:34:38 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/15 23:38:11 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,14 @@
 
 void	ft_lstiter(t_list *lst, void (*f)(void *))
 {
-	while (lst)
+	t_list	*cursor;
+
+	if (f == NULL)
+		return ;
+	cursor = lst;
+	while (cursor != NULL)
 	{
-		f(lst->content);
-		lst = lst->next;
+		(*f)((*cursor).content);
+		cursor = (*cursor).next;
 	}
 }
-
-/*#include <stdio.h>
-
-int main()
-{
-    t_list *list1 = ft_lstnew("premier");
-    t_list *list2 = ft_lstnew("deux");
-    t_list *list3 = ft_lstnew("trois");
-    t_list *list4 = ft_lstnew("quatre");
-
-    ft_lstadd_back(&list4, list3);
-    ft_lstadd_back(&list3, list2);
-    ft_lstadd_back(&list2, list1);
-    //list4->list3->list2->list1
-}*/

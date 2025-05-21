@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 17:08:30 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 17:08:30 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/12 00:21:17 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/15 23:44:48 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 
 t_list	*ft_lstnew(void *content)
 {
-	t_list	*new;
+	t_list	*l;
 
-	new = malloc(sizeof(t_list));
-	new->content = content;
-	new->next = NULL;
-	return (new);
+	l = NULL;
+	l = malloc(sizeof(t_list));
+	if (l == NULL)
+		return (NULL);
+	(*l).content = content;
+	(*l).next = NULL;
+	return (l);
 }

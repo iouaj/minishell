@@ -3,73 +3,68 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:36:07 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:36:07 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/05 01:10:14 by  souaguen         #+#    #+#             */
+/*   Updated: 2023/11/13 02:52:40 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	nblen(long n)
+static int	nbr_len(int n)
 {
-	int	i;
+	unsigned int	len;
+	unsigned int	i;
 
-	i = 0;
-	if (n == 0)
-		return (1);
+	i = n;
+	len = 0;
 	if (n < 0)
 	{
-		if (n == -2147483648)
-		{
-			n = 214748364;
-			i++;
-		}
-		else
-			n = -n;
-		i++;
+		i = -1 * n;
+		len++;
 	}
-	while (n > 0)
+	else if (n == 0)
+		return (1);
+	while (i > 0)
 	{
-		n = n / 10;
-		i++;
+		i = i / 10;
+		len++;
 	}
-	return (i);
+	return (len);
+}
+
+static unsigned int	ft_abs(int n)
+{
+	if (n < 0)
+		return (n * -1);
+	return (n);
 }
 
 char	*ft_itoa(int n)
 {
-	char	*nb;
-	long	nbr;
-	int		i;
+	unsigned int	c;
+	unsigned int	i;
+	char			*str;
+	int				len;
 
-	nbr = (long) n;
-	i = nblen(nbr);
-	nb = malloc(sizeof(char) * (i + 1));
-	if (!nb)
+	len = nbr_len(n);
+	str = malloc((sizeof(char) * len) + 1);
+	if (str == NULL)
 		return (NULL);
-	nb[i] = 0;
-	i--;
-	if (nbr < 0)
+	i = 0;
+	c = ft_abs(n);
+	if (n < 0)
+		*(str + (i++)) = '-';
+	if (n >= 0)
+		len--;
+	while (c > 0)
 	{
-		nb[0] = '-';
-		nbr *= -1;
+		*(str + (len - i++)) = (c % 10) + '0';
+		c = c / 10;
 	}
-	if (nbr == 0)
-		nb[i] = '0';
-	while (nbr > 0)
-	{
-		nb[i] = (nbr % 10) + 48;
-		nbr = nbr / 10;
-		i--;
-	}
-	return (nb);
+	if (n == 0)
+		*(str + (i++)) = '0';
+	*(str + i) = '\0';
+	return (str);
 }
-
-// #include <stdio.h>
-
-// int main()
-// {
-// 	printf("%s", ft_itoa(-2147483647));
-// }

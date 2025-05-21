@@ -3,47 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: souaguen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:27:02 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:27:02 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/02 22:01:33 by souaguen          #+#    #+#             */
+/*   Updated: 2023/11/17 15:45:27 by souaguen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strnstr(const char *s1, const char *s2, size_t len)
+char	*ft_strnstr(const char *big, const char *little, size_t len)
 {
 	size_t	i;
-	size_t	j;
-	int		end;
+	size_t	l_len;
 
 	i = 0;
-	end = 0;
-	if (!s2[i])
-		return ((char *) s1);
-	while (i < len && s1[i])
+	l_len = ft_strlen(little);
+	if ((len <= 0 && l_len > 0)
+		|| (l_len > len && little != NULL && big != NULL))
+		return (NULL);
+	else if (l_len == 0)
+		return ((char *)(big));
+	while (*(big + i) != '\0' && i <= (len - l_len))
 	{
-		j = 0;
-		while (s1[i + j] == s2[j] && (i + j) < len)
-		{
-			j++;
-			if (!s2[j])
-				end = 1;
-		}
-		if (end == 1)
-			return ((char *) s1 + i);
+		if (ft_strncmp((big + i), (char *)(little), l_len) == 0)
+			return ((char *)(big + i));
 		i++;
 	}
 	return (NULL);
 }
-
-// #include <stdio.h>
-
-// int main()
-// {
-//     char s1[] = "Salut je suis une string";
-//     char s2[] = "re";
-
-//     printf("%s", ft_strnstr(s1, s2, 20));
-// }

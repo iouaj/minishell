@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 12:02:43 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/06 12:02:43 by iouajjou         ###   ########.fr       */
+/*   Created: 2023/11/05 05:14:47 by  souaguen         #+#    #+#             */
+/*   Updated: 2024/07/25 13:52:26 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,11 @@ void	ft_putstr_fd(char *s, int fd)
 	int	i;
 
 	i = 0;
-	while (s[i])
+	if (s == NULL)
+		return ;
+	while (*(s + i) != '\0')
 	{
-		ft_putchar_fd(s[i], fd);
+		ft_putchar_fd(*(s + i), fd);
 		i++;
 	}
 }
