@@ -2,7 +2,7 @@
 
 <p>
   Minishell is an important middle cursus 42 project.
-  It aims at reproducing a shell based on bash
+  It aims at reproducing a shell based on Bash
 </p>
 
 ## Usage: 
